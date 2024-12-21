@@ -6,9 +6,9 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import utils.GamePanel;
 
-public class Scene1 extends Scene {
+public class GameScene extends Scene {
     private long t0;
-    public Scene1(Stage stage){
+    public GameScene(Stage stage){
         super(new StackPane(),600,600);
         StackPane root = (StackPane)getRoot();
         GamePanel gamePanel = new GamePanel(600,600);

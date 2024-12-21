@@ -3,7 +3,7 @@ package main;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import scene.Scene1;
+import scene.MenuScene;
 
 public class Main extends Application {
     public static void main(String[] args) {
@@ -13,9 +13,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        stage.setTitle("test title");
-        Scene scene1 = new Scene1(stage);
-        stage.setScene(scene1);
+        stage.setTitle("Office Survival");
+        Scene scene = new MenuScene(stage);
+        stage.setScene(scene);
         stage.show();
     }
 }
