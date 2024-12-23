@@ -1,19 +1,34 @@
 package scene;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.TranslateTransition;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import utils.GamePanel;
 
+
 public class GameScene extends Scene {
+
     private long t0;
+    private final ImageView train = new ImageView(new Image(String.valueOf(ClassLoader.getSystemResource("train/1.png"))));
+
     public GameScene(Stage stage){
-        super(new StackPane(),600,600);
-        StackPane root = (StackPane)getRoot();
-        GamePanel gamePanel = new GamePanel(600,600);
+        super(new Pane(),1000,600);
+        Pane root = (Pane)getRoot();
+        GamePanel gamePanel = new GamePanel(1000,600);
+
+        train.setPreserveRatio(true);
+        train.setFitHeight(root.getHeight());
+        train.setViewOrder(-10);
+
         root.getChildren().add(gamePanel);
         gamePanel.requestFocus();
+
+        trainOut(root);
 
         t0 = -1;
         AnimationTimer animation = new AnimationTimer() {
@@ -34,5 +49,18 @@ public class GameScene extends Scene {
             }
         };
         animation.start();
+    }
+
+    private void trainOut(Pane pane){
+        double w = train.getLayoutBounds().getWidth();
+        train.setLayoutY(0);
+        train.setLayoutX((pane.getWidth()-w)/2);
+        pane.getChildren().add(train);
+        TranslateTransition translate = new TranslateTransition(Duration.millis(1000),train);
+        translate.setByX((w+pane.getWidth())/2);
+        translate.playFromStart();
+        translate.setOnFinished(e->{
+            pane.getChildren().remove(train);
+        });
     }
 }

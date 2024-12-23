@@ -1,19 +1,23 @@
 package entity;
 
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import utils.AnimLoader;
 import utils.KeyHandler;
 
-public class Player {
+public class Player extends Entity {
     private final AnimLoader idleAnim = new AnimLoader();
     private final AnimLoader workAnim = new AnimLoader();
     private final AnimLoader eatAnim = new AnimLoader();
-    private AnimLoader curAnim = idleAnim;
 
-    public Player(){
+    public Player(Canvas canvas){
+        super(400,400,200,400);
         loadAnims();
+        setAction("idle");
+        translate(canvas.getWidth()/2,canvas.getHeight());
     }
 
     public void loadAnims(){
@@ -24,28 +28,18 @@ public class Player {
         workAnim.setDuration(0.2);
         eatAnim.setDuration(1);
     }
-    public Image getFrame(){
-        return curAnim.getFrame();
-    }
     public void upd(long dt){
-        if(KeyHandler.getKeyPressed(KeyCode.ENTER)){
-            setAction("work");
-        } else if (KeyHandler.getKeyPressed(KeyCode.E)) {
-            setAction("eat");
-        }
-        else{
-            setAction("idle");
-        }
+        if(KeyHandler.getKeyPressed(KeyCode.ENTER)) setAction("work");
+        else if (KeyHandler.getKeyPressed(KeyCode.E)) setAction("eat");
+        else setAction("idle");
 
-        curAnim.upd(dt);
-    }
-    public void draw(GraphicsContext gc){
-        gc.drawImage(curAnim.getFrame(),0,0,600,600);
+        super.upd(dt);
     }
     public void setAction(String action){
-        if(action.equals("work")) curAnim = workAnim;
-        else if (action.equals("eat")) curAnim = eatAnim;
-        else curAnim = idleAnim;
+        super.setAction(action);
+        if(action.equals("work")) setCurAnim(workAnim);
+        else if (action.equals("eat")) setCurAnim(eatAnim);
+        else setCurAnim(idleAnim);
     }
 
 }
