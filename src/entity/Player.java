@@ -14,10 +14,10 @@ public class Player extends Entity {
     private final AnimLoader eatAnim = new AnimLoader();
 
     public Player(Canvas canvas){
-        super(400,400,200,400);
+        super(600,600,300,600);
         loadAnims();
         setAction("idle");
-        translate(canvas.getWidth()/2,canvas.getHeight());
+        translate(canvas.getWidth()/2,canvas.getHeight()+100);
     }
 
     public void loadAnims(){
