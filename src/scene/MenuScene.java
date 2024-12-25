@@ -47,7 +47,7 @@ public class MenuScene extends Scene {
             btns.setLayoutY(root.getHeight()-val.doubleValue());
         });
 
-        addMouseSparkle(root,root);
+        addMouseSparkle(root,root,Color.WHITE);
 
         train.setPreserveRatio(true);
         train.setFitHeight(root.getHeight());

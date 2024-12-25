@@ -1,10 +1,11 @@
-package utils;
+package ui;
 
 import background.Background;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import utils.Fonts;
 
 public class GameTimer {
     private final double x,y;

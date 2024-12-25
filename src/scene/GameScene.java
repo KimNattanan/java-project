@@ -6,9 +6,11 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.GamePanel;
+import utils.Tools;
 
 
 public class GameScene extends Scene {
@@ -20,6 +22,8 @@ public class GameScene extends Scene {
         super(new Pane(),1000,600);
         Pane root = (Pane)getRoot();
         GamePanel gamePanel = new GamePanel(1000,600);
+        gamePanel.setViewOrder(20);
+        Tools.addMouseSparkle(root,root, Color.BLACK);
 
         train.setPreserveRatio(true);
         train.setFitHeight(root.getHeight());

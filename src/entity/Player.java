@@ -1,33 +1,28 @@
 package entity;
 
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.media.Media;
 import utils.AnimLoader;
 import utils.KeyHandler;
+import javafx.scene.media.MediaPlayer;
 
 public class Player extends Entity {
-    private final AnimLoader idleAnim = new AnimLoader();
-    private final AnimLoader workAnim = new AnimLoader();
-    private final AnimLoader eatAnim = new AnimLoader();
+    private final AnimLoader idleAnim = new AnimLoader("player/idle",1);
+    private final AnimLoader workAnim = new AnimLoader("player/work",0.2);
+    private final AnimLoader eatAnim = new AnimLoader("player/idle",1);
+    private final MediaPlayer workSound;
 
     public Player(Canvas canvas){
         super(600,600,300,600);
-        loadAnims();
         setAction("idle");
         translate(canvas.getWidth()/2,canvas.getHeight()+100);
+
+        Media media = new Media(ClassLoader.getSystemResource("player/sound/work.mp3").toString());
+        workSound = new MediaPlayer(media);
+        workSound.setCycleCount(MediaPlayer.INDEFINITE);
     }
 
-    public void loadAnims(){
-        idleAnim.loadFromDir("player/idle");
-        workAnim.loadFromDir("player/work");
-        eatAnim.loadFromDir("player/idle");
-        idleAnim.setDuration(1);
-        workAnim.setDuration(0.2);
-        eatAnim.setDuration(1);
-    }
     public void upd(long dt){
         if(KeyHandler.getKeyPressed(KeyCode.ENTER)) setAction("work");
         else if (KeyHandler.getKeyPressed(KeyCode.E)) setAction("eat");
@@ -36,10 +31,23 @@ public class Player extends Entity {
         super.upd(dt);
     }
     public void setAction(String action){
-        super.setAction(action);
-        if(action.equals("work")) setCurAnim(workAnim);
-        else if (action.equals("eat")) setCurAnim(eatAnim);
-        else setCurAnim(idleAnim);
+        if(getAction().equals(action)) return;
+        if(action.equals("work")){
+            stopAllSound();
+            workSound.play();
+            setAction(action,workAnim);
+        }
+        else if (action.equals("eat")){
+            stopAllSound();
+            setAction(action,eatAnim);
+        }
+        else{
+            stopAllSound();
+            setAction(action,idleAnim);
+        }
+    }
+    public void stopAllSound(){
+        if(workSound != null) workSound.stop();
     }
 
 }
