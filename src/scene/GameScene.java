@@ -11,19 +11,15 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import utils.Fonts;
 import utils.GamePanel;
 import utils.KeyHandler;
 import utils.Tools;
 
 
 public class GameScene extends Scene {
-
     private long t0 = -1;
-    private boolean pause = false;
     private final ImageView train = new ImageView(new Image(String.valueOf(ClassLoader.getSystemResource("train/1.png"))));
 
     public GameScene(Stage stage){
@@ -33,25 +29,23 @@ public class GameScene extends Scene {
         gamePanel.setViewOrder(20);
         Tools.addMouseSparkle(root,root, Color.BLACK);
 
-
         VBox pauseMenu = createPauseMenu(stage);
         pauseMenu.setViewOrder(15);
         pauseMenu.setVisible(false);
 
-
-        HBox rewardsPane = createRewardsPane();
+        StackPane rewardsPane = createRewardsPane();
         rewardsPane.setViewOrder(19);
-        rewardsPane.setVisible(true);
+        rewardsPane.setVisible(false);
 
-        root.getChildren().addAll(gamePanel,pauseMenu);
+        root.getChildren().addAll(gamePanel,rewardsPane,pauseMenu);
         gamePanel.requestFocus();
 
         this.setOnMouseMoved(e -> KeyHandler.setMousePos(e.getX(),e.getY()));
         this.setOnMouseDragged(e -> KeyHandler.setMousePos(e.getX(),e.getY()));
-        gamePanel.addEventHandler(KeyEvent.KEY_RELEASED,e->{
+        this.addEventHandler(KeyEvent.KEY_RELEASED,e->{
             if(e.getCode()==KeyCode.ESCAPE){
-                pause = !pause;
-                pauseMenu.setVisible(!pauseMenu.isVisible());
+                GamePanel.setIsPause(!GamePanel.getIsPause());
+                pauseMenu.setVisible(GamePanel.getIsPause());
             }
         });
 
@@ -71,7 +65,13 @@ public class GameScene extends Scene {
                 long dt = t1-t0;
                 t0 = t1;
                 try{
-                    if(!pause) gamePanel.upd(dt);
+                    if(!GamePanel.getIsPause()){
+                        gamePanel.upd(dt);
+
+                    }
+                    else{
+                        if(!pauseMenu.isVisible()) pauseMenu.setVisible(true);
+                    }
                 }catch (InterruptedException e){
                     throw new RuntimeException(e);
                 }
@@ -82,12 +82,12 @@ public class GameScene extends Scene {
     }
 
     private VBox createPauseMenu(Stage stage) {
-        VBox menu = new VBox();
+        VBox menu = new VBox(20);
         menu.setBackground(Background.fill(Color.rgb(0,0,0,0.3)));
         menu.setAlignment(Pos.CENTER);
         menu.setPrefSize(stage.getWidth(),stage.getHeight());
 
-        Button exitBtn = createImageButton("homeButton.png","homeButtonHover.png");
+        Button exitBtn = createImageButton("ui/home_btn.png", "ui/home_btn_hover.png");
         exitBtn.setPrefSize(150,150);
         exitBtn.setOnAction(e->{
             stage.setScene(new HomeScene(stage));
@@ -97,15 +97,26 @@ public class GameScene extends Scene {
         return menu;
     }
 
-    private HBox createRewardsPane() {
-        HBox root = new HBox();
+    private StackPane createRewardsPane() {
+        StackPane root = new StackPane();
         root.setPrefSize(this.getWidth(),this.getHeight());
-        root.setAlignment(Pos.CENTER);
 
-        Button bento = createImageButton("bento.png","bentoHover.png");
-        Button coffee = createImageButton("coffee.png","coffeeHover.png");
+        HBox btns = new HBox(20);
+        btns.setPrefSize(this.getWidth(),this.getHeight());
+        btns.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll(bento,coffee);
+        Button bento = createImageButton("ui/bento_btn.png", "ui/bento_btn_hover.png");
+        bento.setPrefSize(200,200);
+        Button coffee = createImageButton("ui/coffee_btn.png", "ui/coffee_btn_hover.png");
+        coffee.setPrefSize(200,200);
+
+        btns.getChildren().addAll(bento,coffee);
+
+        ImageView bg = new ImageView(new Image(String.valueOf(ClassLoader.getSystemResource("background/rewards_bg.png"))));
+        bg.setFitWidth(this.getWidth());
+        bg.setFitHeight(this.getHeight());
+
+        root.getChildren().addAll(bg,btns);
         return root;
     }
     private Button createImageButton(String defaultImg,String hoverImg){

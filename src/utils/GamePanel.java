@@ -6,13 +6,13 @@ import entity.Player;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import ui.EnergyBar;
 import ui.GameTimer;
 import ui.LoveBar;
 import ui.SleepBar;
 
 public class GamePanel extends Canvas {
+    public static boolean isPause,isGameOver,isRewardable;
     public GraphicsContext gc = this.getGraphicsContext2D();
     public Player plr = new Player(this);
     public Boss boss = new Boss(this);
@@ -27,7 +27,7 @@ public class GamePanel extends Canvas {
     public GamePanel(double w,double h){
         super(w,h);
 
-        background.insert("bg2","bg2.png");
+        background.insert("bg2", "background/spot_pattern.png");
         background.setBg2("bg2");
         timer = new GameTimer(this,background);
         loveBar = new LoveBar(this,boss,plr);
@@ -36,6 +36,10 @@ public class GamePanel extends Canvas {
 
         this.setVisible(true);
         addKeyListener();
+
+        GamePanel.setIsGameOver(false);
+        GamePanel.setIsPause(false);
+        GamePanel.setIsRewardable(false);
     }
     public void addKeyListener() {
         this.addEventHandler(KeyEvent.KEY_PRESSED, e->KeyHandler.setKeyPressed(e.getCode(),true));
@@ -58,4 +62,11 @@ public class GamePanel extends Canvas {
         energyBar.draw(gc);
         sleepBar.draw(gc);
     }
+
+    public static boolean getIsPause(){ return isPause; }
+    public static void setIsPause(boolean bool){ isPause = bool; }
+    public static boolean getIsGameOver(){ return isGameOver; }
+    public static void setIsGameOver(boolean bool){ isGameOver = bool; }
+    public static boolean getIsRewardable(){ return isRewardable; }
+    public static void setIsRewardable(boolean bool){ isRewardable = bool; }
 }

@@ -19,10 +19,10 @@ public class GameTimer {
     public GameTimer(Canvas canvas, Background bg){
         canvasWidth = canvas.getWidth();
         background = bg;
-        background.insert("0","office/morning.jpg");
-        background.insert("1","office/evening.jpg");
-        background.insert("2","office/night_light_on.jpg");
-        background.insert("3","office/night_light_off.jpg");
+        background.insert("0", "background/office_morning.jpg");
+        background.insert("1", "background/office_evening.jpg");
+        background.insert("2", "background/office_night_light_on.jpg");
+        background.insert("3", "background/office_night_light_off.jpg");
         background.setBg("0");
     }
     public void draw(GraphicsContext gc){
