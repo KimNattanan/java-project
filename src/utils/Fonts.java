@@ -5,7 +5,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
 public class Fonts {
-    private final static int[] sz = {16,20,24,28,32,40,64,96,128};
+    private final static int[] sz = {12,16,20,24,28,32,40,64,96,128};
     private final static String defaultFont = "Arial";
 
     public static int getSize(int sizeId){ return sz[sizeId]; }

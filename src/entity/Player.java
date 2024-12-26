@@ -10,7 +10,8 @@ import javafx.scene.media.MediaPlayer;
 public class Player extends Entity {
     private final AnimLoader idleAnim = new AnimLoader("player/idle",1);
     private final AnimLoader workAnim = new AnimLoader("player/work",0.2);
-    private final AnimLoader eatAnim = new AnimLoader("player/idle",1);
+    private final AnimLoader sleepAnim = new AnimLoader("player/sleep",3.2);
+    private final AnimLoader dieAnim = new AnimLoader("player/die",1);
     private final MediaPlayer workSound;
 
     public Player(Canvas canvas){
@@ -20,13 +21,19 @@ public class Player extends Entity {
 
         Media media = new Media(ClassLoader.getSystemResource("player/sound/work.mp3").toString());
         workSound = new MediaPlayer(media);
+        workSound.setOnReady(()->{
+            workSound.play();
+            workSound.stop();
+            System.out.println("ready!!");
+        });
         workSound.setCycleCount(MediaPlayer.INDEFINITE);
     }
 
     public void upd(long dt){
-        if(KeyHandler.getKeyPressed(KeyCode.ENTER)) setAction("work");
-        else if (KeyHandler.getKeyPressed(KeyCode.E)) setAction("eat");
-        else setAction("idle");
+        if(!getAction().equals("sleep") && !getAction().equals("die")) {
+            if (KeyHandler.getKeyPressed(KeyCode.ENTER)) setAction("work");
+            else setAction("idle");
+        }
 
         super.upd(dt);
     }
@@ -37,9 +44,13 @@ public class Player extends Entity {
             workSound.play();
             setAction(action,workAnim);
         }
-        else if (action.equals("eat")){
+        else if(action.equals("sleep")){
             stopAllSound();
-            setAction(action,eatAnim);
+            setAction(action,sleepAnim);
+        }
+        else if(action.equals("die")){
+            stopAllSound();
+            setAction(action,dieAnim);
         }
         else{
             stopAllSound();

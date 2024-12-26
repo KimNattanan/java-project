@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.GamePanel;
+import utils.KeyHandler;
 import utils.Tools;
 
 
@@ -25,6 +26,9 @@ public class GameScene extends Scene {
         gamePanel.setViewOrder(20);
         Tools.addMouseSparkle(root,root, Color.BLACK);
 
+        this.setOnMouseMoved(e -> KeyHandler.setMousePos(e.getX(),e.getY()));
+        this.setOnMouseDragged(e -> KeyHandler.setMousePos(e.getX(),e.getY()));
+
         train.setPreserveRatio(true);
         train.setFitHeight(root.getHeight());
         train.setViewOrder(-10);
@@ -33,6 +37,7 @@ public class GameScene extends Scene {
         gamePanel.requestFocus();
 
         trainOut(root);
+
 
         t0 = -1;
         AnimationTimer animation = new AnimationTimer() {

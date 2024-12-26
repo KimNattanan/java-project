@@ -9,41 +9,30 @@ import javafx.scene.text.FontWeight;
 import utils.Fonts;
 import utils.KeyHandler;
 
-public class LoveBar extends Bar {
-    private final Canvas canvas;
-    private final Boss boss;
+public class SleepBar extends Bar {
     private final Player plr;
     private final double increaseSpeed = 0.2; // portion per sec
-    private final double decreaseSpeed = -0.3; // portion per sec
-    private final Color barColor = Color.rgb(255,56,176);
-    private final Color barColorHover = Color.rgb(255,133,205);
+    private final double decreaseSpeed = -0.03; // portion per sec
+    private final Color barColor = Color.rgb(95,0,255);
+    private final Color barColorHover = Color.rgb(163,111,255);
 
-    public LoveBar(Canvas canvas, Boss boss, Player plr){
-        super(0,33,canvas.getWidth()/2,25,2, "LOVE",Fonts.getDefault(1,FontWeight.BOLD));
+    public SleepBar(Canvas canvas, Player plr){
+        super(0,17,canvas.getWidth()/2,15,2, "AWAKENESS",Fonts.getDefault(0,FontWeight.BOLD));
         setBarColor(barColor);
         setBorderColor(Color.BLACK);
         setTitleColor(Color.WHITE);
-        this.canvas = canvas;
-        this.boss = boss;
         this.plr = plr;
+        setVal(1);
     }
     public void upd(long dt){
-        BoundingBox bossBox = boss.getBoundingBox();
-        if((bossBox.getMinX()>0 && bossBox.getMinX()<canvas.getWidth()) ||
-           (bossBox.getMaxX()>0 && bossBox.getMaxX()<canvas.getWidth())){
-            if(plr.getAction().equals("work")){ // increase
+        if(!plr.getAction().equals("die")) {
+            if (plr.getAction().equals("sleep")) {
                 setSpeed(increaseSpeed);
-            }
-            else{ // decrease
+                if (getVal() == 1) plr.setAction("idle");
+            } else {
                 setSpeed(decreaseSpeed);
+                if (getVal() == 0) plr.setAction("sleep");
             }
-        }
-        else{ // no change
-            setSpeed(0);
-        }
-
-        if(getVal()==1){
-
         }
 
         if(KeyHandler.getMouseX() >= getX() && KeyHandler.getMouseX() <= getX()+getW() &&

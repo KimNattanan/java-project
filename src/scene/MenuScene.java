@@ -2,7 +2,6 @@ package scene;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
-import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -58,7 +57,7 @@ public class MenuScene extends Scene {
 
     private Button createPlayBtn(Stage stage,Pane pane){
         Button btn = new Button("Go to Work!");
-        btn.setFont(Fonts.getDefault(5, FontWeight.BOLD));
+        btn.setFont(Fonts.getDefault(6, FontWeight.BOLD));
         btn.setStyle(
             "-fx-background-color: transparent;" +
             "-fx-text-fill: rgb(0,20,20)"
@@ -87,7 +86,7 @@ public class MenuScene extends Scene {
     }
     private Button createTutorialBtn(Stage stage){
         Button btn = new Button("Tutorial");
-        btn.setFont(Fonts.getDefault(5, FontWeight.NORMAL));
+        btn.setFont(Fonts.getDefault(6, FontWeight.NORMAL));
         btn.setStyle(
             "-fx-background-color: transparent;" +
             "-fx-text-fill: rgb(0,20,20)"
@@ -97,7 +96,7 @@ public class MenuScene extends Scene {
     }
     private Button createSettingsBtn(Stage stage){
         Button btn = new Button("Settings");
-        btn.setFont(Fonts.getDefault(5, FontWeight.NORMAL));
+        btn.setFont(Fonts.getDefault(6, FontWeight.NORMAL));
         btn.setStyle(
             "-fx-background-color: transparent;" +
             "-fx-text-fill: rgb(0,20,20)"

@@ -6,8 +6,11 @@ import entity.Player;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import ui.EnergyBar;
 import ui.GameTimer;
 import ui.LoveBar;
+import ui.SleepBar;
 
 public class GamePanel extends Canvas {
     public GraphicsContext gc = this.getGraphicsContext2D();
@@ -18,27 +21,33 @@ public class GamePanel extends Canvas {
     public final long bgTime = (long)(10e9);
     public GameTimer timer;
     public LoveBar loveBar;
+    public EnergyBar energyBar;
+    public SleepBar sleepBar;
 
     public GamePanel(double w,double h){
         super(w,h);
 
         background.insert("bg2","bg2.png");
         background.setBg2("bg2");
-        timer = new GameTimer(this.getWidth()/2,0,background);
+        timer = new GameTimer(this,background);
         loveBar = new LoveBar(this,boss,plr);
+        energyBar = new EnergyBar(this,plr);
+        sleepBar = new SleepBar(this,plr);
 
         this.setVisible(true);
         addKeyListener();
     }
     public void addKeyListener() {
-        this.setOnKeyPressed((KeyEvent event) -> KeyHandler.setKeyPressed(event.getCode(), true));
-        this.setOnKeyReleased((KeyEvent event) -> KeyHandler.setKeyPressed(event.getCode(), false));
+        this.setOnKeyPressed(e -> KeyHandler.setKeyPressed(e.getCode(), true));
+        this.setOnKeyReleased(e-> KeyHandler.setKeyPressed(e.getCode(), false));
     }
     public void upd(long dt) throws InterruptedException {
         timer.upd(dt);
         plr.upd(dt);
         boss.upd(dt);
         loveBar.upd(dt);
+        energyBar.upd(dt);
+        sleepBar.upd(dt);
     }
     public void paintComponent(){
         background.draw(gc);
@@ -46,5 +55,7 @@ public class GamePanel extends Canvas {
         plr.draw(gc);
         timer.draw(gc);
         loveBar.draw(gc);
+        energyBar.draw(gc);
+        sleepBar.draw(gc);
     }
 }
