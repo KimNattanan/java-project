@@ -19,12 +19,12 @@ import utils.Fonts;
 
 import static utils.Tools.addMouseSparkle;
 
-public class MenuScene extends Scene {
+public class HomeScene extends Scene {
 
     private boolean playClicked = false;
     private final ImageView train = new ImageView(new Image(String.valueOf(ClassLoader.getSystemResource("train/1.png"))));
 
-    public MenuScene(Stage stage) {
+    public HomeScene(Stage stage) {
         super(new Pane(),1000,600);
         Pane root = (Pane)getRoot();
         root.setBackground(Background.fill(Color.rgb(155,155,125)));

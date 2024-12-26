@@ -38,8 +38,8 @@ public class GamePanel extends Canvas {
         addKeyListener();
     }
     public void addKeyListener() {
-        this.setOnKeyPressed(e -> KeyHandler.setKeyPressed(e.getCode(), true));
-        this.setOnKeyReleased(e-> KeyHandler.setKeyPressed(e.getCode(), false));
+        this.addEventHandler(KeyEvent.KEY_PRESSED, e->KeyHandler.setKeyPressed(e.getCode(),true));
+        this.addEventHandler(KeyEvent.KEY_RELEASED, e->KeyHandler.setKeyPressed(e.getCode(),false));
     }
     public void upd(long dt) throws InterruptedException {
         timer.upd(dt);
