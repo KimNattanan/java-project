@@ -33,15 +33,10 @@ public class GamePanel extends Canvas {
         sleepBar = new SleepBar(this,plr);
 
         this.setVisible(true);
-        addKeyListener();
 
-        GamePanel.setIsGameOver(true);
+        GamePanel.setIsGameOver(false);
         GamePanel.setIsPause(false);
         GamePanel.setIsRewardable(false);
-    }
-    public void addKeyListener() {
-        this.addEventHandler(KeyEvent.KEY_PRESSED, e->KeyHandler.setKeyPressed(e.getCode(),true));
-        this.addEventHandler(KeyEvent.KEY_RELEASED, e->KeyHandler.setKeyPressed(e.getCode(),false));
     }
     public void upd(long dt) throws InterruptedException {
         timer.upd(dt);

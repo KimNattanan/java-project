@@ -2,6 +2,7 @@ package entity;
 
 import javafx.scene.canvas.Canvas;
 import utils.AnimLoader;
+import utils.GamePanel;
 
 import static utils.Tools.mathRnd;
 
@@ -34,25 +35,27 @@ public class Boss extends Entity{
     }
 
     public void upd(long dt){
-        if(dt<cooldown){
-            if(!getAction().equals("idle")) setAction("idle",idleAnim);
-            cooldown-=dt;
-        }
-        else{
-            if(direction<0 && !getAction().equals("walkLeft")) setAction("walkLeft",walkLeftAnim);
-            else if(direction>0 && !getAction().equals("walkRight")) setAction("walkRight",walkRightAnim);
-            translate(speed/1e9*(dt-cooldown)*direction,0);
-            cooldown=0;
-            if(getX()<=leftmost || getX()>=rightmost){
-                setX(getX()<=leftmost ? leftmost : rightmost);
-                speed = mathRnd(minSpeed,maxSpeed);
-                cooldown = (long)mathRnd(minCooldown,maxCooldown);
-                direction = -direction;
-            }
-            else if(mathRnd(0,1)<stopChance){
-                speed = mathRnd(minSpeed,maxSpeed);
-                cooldown = (long)mathRnd(minStopTime,maxStopTime);
-                if(mathRnd(0,1)<0.5) direction = -direction;
+        if(GamePanel.getIsRewardable()) {
+            if (!getAction().equals("idle")) setAction("idle", idleAnim);
+        }else{
+            if (dt < cooldown) {
+                if (!getAction().equals("idle")) setAction("idle", idleAnim);
+                cooldown -= dt;
+            } else {
+                if (direction < 0 && !getAction().equals("walkLeft")) setAction("walkLeft", walkLeftAnim);
+                else if (direction > 0 && !getAction().equals("walkRight")) setAction("walkRight", walkRightAnim);
+                translate(speed / 1e9 * (dt - cooldown) * direction, 0);
+                cooldown = 0;
+                if (getX() <= leftmost || getX() >= rightmost) {
+                    setX(getX() <= leftmost ? leftmost : rightmost);
+                    speed = mathRnd(minSpeed, maxSpeed);
+                    cooldown = (long) mathRnd(minCooldown, maxCooldown);
+                    direction = -direction;
+                } else if (mathRnd(0, 1) < stopChance) {
+                    speed = mathRnd(minSpeed, maxSpeed);
+                    cooldown = (long) mathRnd(minStopTime, maxStopTime);
+                    if (mathRnd(0, 1) < 0.5) direction = -direction;
+                }
             }
         }
         super.upd(dt);

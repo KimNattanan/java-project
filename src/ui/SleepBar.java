@@ -12,7 +12,8 @@ import utils.KeyHandler;
 public class SleepBar extends Bar {
     private final Player plr;
     private final double increaseSpeed = 0.2; // portion per sec
-    private final double decreaseSpeed = -0.03; // portion per sec
+    private final double decreaseSpeed = -0.04; // portion per sec
+    private final double coffeeValue = 0.7;
     private final Color barColor = Color.rgb(95,0,255);
     private final Color barColorHover = Color.rgb(163,111,255);
 
@@ -45,5 +46,8 @@ public class SleepBar extends Bar {
         }
 
         super.upd(dt);
+    }
+    public void drinkCoffee(){
+        setVal(getVal()+coffeeValue);
     }
 }

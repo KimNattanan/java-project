@@ -4,6 +4,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.Media;
 import utils.AnimLoader;
+import utils.GamePanel;
 import utils.KeyHandler;
 import javafx.scene.media.MediaPlayer;
 
@@ -31,7 +32,7 @@ public class Player extends Entity {
 
     public void upd(long dt){
         if(!getAction().equals("sleep") && !getAction().equals("die")) {
-            if (KeyHandler.getKeyPressed(KeyCode.ENTER)) setAction("work");
+            if (KeyHandler.getKeyPressed(KeyCode.SPACE) && !GamePanel.getIsRewardable()) setAction("work");
             else setAction("idle");
         }
 
@@ -39,22 +40,25 @@ public class Player extends Entity {
     }
     public void setAction(String action){
         if(getAction().equals(action)) return;
-        if(action.equals("work")){
-            stopAllSound();
-            workSound.play();
-            setAction(action,workAnim);
-        }
-        else if(action.equals("sleep")){
-            stopAllSound();
-            setAction(action,sleepAnim);
-        }
-        else if(action.equals("die")){
-            stopAllSound();
-            setAction(action,dieAnim);
-        }
-        else{
-            stopAllSound();
-            setAction(action,idleAnim);
+        switch (action) {
+            case "work" -> {
+                stopAllSound();
+                workSound.play();
+                setAction(action, workAnim);
+            }
+            case "sleep" -> {
+                stopAllSound();
+                setAction(action, sleepAnim);
+            }
+            case "die" -> {
+                stopAllSound();
+                setAction(action, dieAnim);
+                GamePanel.setIsGameOver(true);
+            }
+            default -> {
+                stopAllSound();
+                setAction(action, idleAnim);
+            }
         }
     }
     public void stopAllSound(){
