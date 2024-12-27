@@ -2,25 +2,31 @@ package scene;
 
 import javafx.animation.AnimationTimer;
 import javafx.animation.TranslateTransition;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import javafx.util.Duration;
+import ui.ImageButton;
+import utils.Fonts;
 import utils.GamePanel;
 import utils.KeyHandler;
 import utils.Tools;
 
-
 public class GameScene extends Scene {
     private long t0 = -1;
-    private final ImageView train = new ImageView(new Image(String.valueOf(ClassLoader.getSystemResource("train/1.png"))));
+    private boolean changingScene=false;
+    private StackPane gameOverPane;
 
     public GameScene(Stage stage){
         super(new Pane(),1000,600);
@@ -29,7 +35,7 @@ public class GameScene extends Scene {
         gamePanel.setViewOrder(20);
         Tools.addMouseSparkle(root,root, Color.BLACK);
 
-        VBox pauseMenu = createPauseMenu(stage);
+        VBox pauseMenu = createPauseMenu(stage,root);
         pauseMenu.setViewOrder(15);
         pauseMenu.setVisible(false);
 
@@ -44,15 +50,14 @@ public class GameScene extends Scene {
         this.setOnMouseDragged(e -> KeyHandler.setMousePos(e.getX(),e.getY()));
         this.addEventHandler(KeyEvent.KEY_RELEASED,e->{
             if(e.getCode()==KeyCode.ESCAPE){
-                GamePanel.setIsPause(!GamePanel.getIsPause());
-                pauseMenu.setVisible(GamePanel.getIsPause());
+                if(!GamePanel.getIsGameOver()) {
+                    GamePanel.setIsPause(!GamePanel.getIsPause());
+                    pauseMenu.setVisible(GamePanel.getIsPause());
+                }
             }
         });
 
-        train.setPreserveRatio(true);
-        train.setFitHeight(root.getHeight());
-        train.setViewOrder(-10);
-        trainOut(root);
+        Tools.trainOut(root);
 
 
         AnimationTimer animation = new AnimationTimer() {
@@ -65,12 +70,28 @@ public class GameScene extends Scene {
                 long dt = t1-t0;
                 t0 = t1;
                 try{
-                    if(!GamePanel.getIsPause()){
-                        gamePanel.upd(dt);
-
+                    if(GamePanel.getIsGameOver()){
+                        if(gameOverPane == null){
+                            gameOverPane = createGameOverPane(stage,root,gamePanel);
+                            gameOverPane.setViewOrder(14);
+                            root.getChildren().add(gameOverPane);
+                        }
                     }
                     else{
-                        if(!pauseMenu.isVisible()) pauseMenu.setVisible(true);
+                        if(gameOverPane.isVisible()) gameOverPane.setVisible(false);
+                        if(GamePanel.getIsPause()){
+                            if(!pauseMenu.isVisible()) pauseMenu.setVisible(true);
+                        }
+                        else{
+                            if(pauseMenu.isVisible()) pauseMenu.setVisible(false);
+                            if(GamePanel.getIsRewardable()){
+                                if(!rewardsPane.isVisible()) rewardsPane.setVisible(true);
+                            }
+                            else{
+                                if(rewardsPane.isVisible()) rewardsPane.setVisible(false);
+                            }
+                            gamePanel.upd(dt);
+                        }
                     }
                 }catch (InterruptedException e){
                     throw new RuntimeException(e);
@@ -81,33 +102,31 @@ public class GameScene extends Scene {
         animation.start();
     }
 
-    private VBox createPauseMenu(Stage stage) {
-        VBox menu = new VBox(20);
-        menu.setBackground(Background.fill(Color.rgb(0,0,0,0.3)));
-        menu.setAlignment(Pos.CENTER);
-        menu.setPrefSize(stage.getWidth(),stage.getHeight());
+    private VBox createPauseMenu(Stage stage,Pane root) {
+        VBox pane = new VBox(20);
+        pane.setPrefSize(this.getWidth(),this.getHeight());
+        pane.setAlignment(Pos.CENTER);
+        pane.setBackground(Background.fill(Color.rgb(0,0,0,0.3)));
 
-        Button exitBtn = createImageButton("ui/home_btn.png", "ui/home_btn_hover.png");
-        exitBtn.setPrefSize(150,150);
-        exitBtn.setOnAction(e->{
-            stage.setScene(new HomeScene(stage));
-        });
+        Button home = createHomeButton(stage,root);
+        home.setPrefSize(549,137);
 
-        menu.getChildren().add(exitBtn);
-        return menu;
+        pane.getChildren().add(home);
+        return pane;
     }
 
     private StackPane createRewardsPane() {
-        StackPane root = new StackPane();
-        root.setPrefSize(this.getWidth(),this.getHeight());
+        StackPane pane = new StackPane();
+        pane.setPrefSize(this.getWidth(),this.getHeight());
+        pane.setAlignment(Pos.CENTER);
 
         HBox btns = new HBox(20);
         btns.setPrefSize(this.getWidth(),this.getHeight());
         btns.setAlignment(Pos.CENTER);
 
-        Button bento = createImageButton("ui/bento_btn.png", "ui/bento_btn_hover.png");
+        Button bento = new ImageButton("ui/bento_btn.png", "ui/bento_btn_hover.png","ui/bento_btn_active.png");
         bento.setPrefSize(200,200);
-        Button coffee = createImageButton("ui/coffee_btn.png", "ui/coffee_btn_hover.png");
+        Button coffee = new ImageButton("ui/coffee_btn.png", "ui/coffee_btn_hover.png","ui/coffee_btn_active.png");
         coffee.setPrefSize(200,200);
 
         btns.getChildren().addAll(bento,coffee);
@@ -116,37 +135,66 @@ public class GameScene extends Scene {
         bg.setFitWidth(this.getWidth());
         bg.setFitHeight(this.getHeight());
 
-        root.getChildren().addAll(bg,btns);
-        return root;
-    }
-    private Button createImageButton(String defaultImg,String hoverImg){
-        Button btn = new Button();
-        btn.setStyle("-fx-background-color: transparent;" +
-                "-fx-background-image: url("+defaultImg+");" +
-                "-fx-background-size: 100% 100%;");
-        btn.setOnMouseEntered(e->{
-            btn.setStyle("-fx-background-color: transparent;" +
-                    "-fx-background-image: url("+hoverImg+");" +
-                    "-fx-background-size: 100% 100%;");
-        });
-        btn.setOnMouseExited(e->{
-            btn.setStyle("-fx-background-color: transparent;" +
-                    "-fx-background-image: url("+defaultImg+");" +
-                    "-fx-background-size: 100% 100%;");
-        });
-        return btn;
+        pane.getChildren().addAll(bg,btns);
+        return pane;
     }
 
-    private void trainOut(Pane pane){
-        double w = train.getLayoutBounds().getWidth();
-        train.setLayoutY(0);
-        train.setLayoutX((pane.getWidth()-w)/2);
-        pane.getChildren().add(train);
-        TranslateTransition translate = new TranslateTransition(Duration.millis(1000),train);
-        translate.setByX((w+pane.getWidth())/2);
-        translate.playFromStart();
-        translate.setOnFinished(e->{
-            pane.getChildren().remove(train);
+    private StackPane createGameOverPane(Stage stage,Pane root,GamePanel gamePanel){
+        StackPane pane = new StackPane();
+        pane.setPrefSize(this.getWidth(),this.getHeight());
+        pane.setAlignment(Pos.CENTER_RIGHT);
+        pane.setBackground(Background.fill(Color.rgb(0,0,0,0.5)));
+
+        VBox menu = new VBox(20);
+        menu.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+        menu.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+        menu.setAlignment(Pos.CENTER);
+        menu.setBackground(Background.fill(Color.rgb(197,197,197)));
+        menu.setPadding(new Insets(20));
+
+        Label score = new Label("Score: "+String.valueOf(gamePanel.timer.getHours()));
+        score.setFont(Fonts.getDefault(3, FontWeight.BOLD));
+        score.setTextFill(Color.rgb(0,0,0));
+
+        HBox btns = new HBox(20);
+
+        Button home = createHomeButton(stage,root);
+        home.setPrefSize(549*0.3,137*0.3);
+
+        Button retry = createRetryButton(stage,root);
+        retry.setPrefSize(549*0.3,137*0.3);
+
+        btns.getChildren().addAll(home,retry);
+
+        menu.getChildren().addAll(score,btns);
+
+        pane.getChildren().add(menu);
+        return pane;
+
+    }
+
+
+    private Button createHomeButton(Stage stage,Pane root){
+        Button home = new ImageButton("ui/home_btn.png", "ui/home_btn_hover.png","ui/home_btn_active.png");
+        home.setOnAction(e->{
+            if(changingScene) return;
+            changingScene = true;
+            Tools.trainIn(root,()->{
+                stage.setScene(new HomeScene(stage));
+            });
         });
+        return home;
+    }
+
+    private Button createRetryButton(Stage stage,Pane root){
+        Button retry = new ImageButton("ui/retry_btn.png","ui/retry_btn_hover.png","ui/retry_btn_active.png");
+        retry.setOnAction(e->{
+            if(changingScene) return;
+            changingScene = true;
+            Tools.trainIn(root,()->{
+                stage.setScene(new GameScene(stage));
+            });
+        });
+        return retry;
     }
 }

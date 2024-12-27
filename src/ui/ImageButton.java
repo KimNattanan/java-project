@@ -1,55 +1,53 @@
 package ui;
 
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-import utils.KeyHandler;
+import javafx.scene.control.Button;
 
-public abstract class ImageButton {
-    private final Image img;
-    private double x,y,w,h,arcW,arcH,padding;
-    private Color bgColor,borderColor;
-    private Color bgColorHover,borderColorHover;
+public class ImageButton extends Button {
+    private final String defaultImg,hoverImg,activeImg;
+    private boolean myHover,myActive;
+    public ImageButton(String defaultImg,String hoverImg,String activeImg){
+        this.defaultImg = defaultImg;
+        this.hoverImg = hoverImg;
+        this.activeImg = activeImg;
 
-    public ImageButton(String path){
-        img = new Image(String.valueOf(ClassLoader.getSystemResource(path)));
+        this.setOnMouseEntered(e->setMyHover(true));
+        this.setOnMouseDragEntered(e->setMyHover(true));
+        this.setOnMouseExited(e->setMyHover(false));
+        this.setOnMouseDragExited(e->setMyHover(false));
 
+        this.setOnMousePressed(e->setMyActive(true));
+        this.setOnMouseReleased(e->setMyActive(false));
+
+        upd();
     }
 
-    public double getX(){ return x; }
-    public void setX(double x){ this.x=x; }
+    private void setImg(String img){
+        this.setStyle("-fx-background-color: transparent;" +
+                "-fx-background-image: url("+img+");" +
+                "-fx-background-size: 100% 100%;");
+    }
 
-    public double getY(){ return y; }
-    public void setY(double y){ this.y=y; }
+    private void upd(){
+        if(getMyHover()&&getMyActive()){
+            setImg(activeImg);
+        }else if(getMyHover()){
+            setImg(hoverImg);
+        }else if(getMyActive()){
+            setImg(activeImg);
+        }else{
+            setImg(defaultImg);
+        }
+    }
 
-    public double getW(){ return w; }
-    public void setW(double w){ this.w=w; }
+    private boolean getMyHover(){ return myHover; }
+    private void setMyHover(boolean bool){
+        myHover=bool;
+        upd();
+    }
 
-    public double getH(){ return h; }
-    public void setH(double h){ this.h=h; }
-
-    public double getArcW(){ return arcW; }
-    public void setArcW(double arcW){ this.arcW=arcW; }
-
-    public double getArcH(){ return arcH; }
-    public void setArcH(double arcH){ this.arcH=arcH; }
-
-    public double getPadding(){ return padding; }
-    public void setPadding(double padding){ this.padding=padding; }
-
-    public Color getBgColor(){ return bgColor; }
-    public void setBgColor(Color bgColor){ this.bgColor=bgColor; }
-
-    public Color getBorderColor(){ return borderColor; }
-    public void setBorderColor(Color borderColor){ this.borderColor=borderColor; }
-
-    public void draw(GraphicsContext gc){
-        boolean hover = ( KeyHandler.getMouseX() >= getX() && KeyHandler.getMouseX() <= getX()+getW() &&
-                          KeyHandler.getMouseY() >= getY() && KeyHandler.getMouseY() <= getY()+getH() );
-        gc.setFill(hover ? borderColorHover : borderColor);
-        gc.fillRoundRect(x, y, w, h, arcW, arcH);
-        gc.setFill(hover ? bgColorHover : bgColor);
-        gc.fillRoundRect(x + padding, y + padding, w - 2 * padding, h - 2 * padding, arcW - 2 * padding, arcH - 2 * padding);
-        gc.drawImage(img, x + padding, y + padding, w - 2 * padding, h - 2 * padding);
+    private boolean getMyActive(){ return myActive; }
+    private void setMyActive(boolean bool){
+        myActive=bool;
+        upd();
     }
 }

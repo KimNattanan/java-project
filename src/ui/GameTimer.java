@@ -45,4 +45,7 @@ public class GameTimer {
         long bg1 = (time/bgTime)%4;
         if(bg0 != bg1) background.setBg(String.valueOf(bg1));
     }
+    public long getHours(){
+        return (long)((time*21600.0/bgTime)/3600);
+    }
 }

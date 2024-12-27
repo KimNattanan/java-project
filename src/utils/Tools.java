@@ -3,6 +3,8 @@ package utils;
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -38,5 +40,36 @@ public class Tools {
             fade.playFromStart();
             translate.playFromStart();
         }
+    }
+
+    public static void trainIn(Pane pane,Runnable runnable){
+        ImageView train = new ImageView(new Image(String.valueOf(ClassLoader.getSystemResource("train/1.png"))));
+        train.setPreserveRatio(true);
+        train.setFitHeight(pane.getHeight());
+        train.setViewOrder(-10);
+        double w = train.getLayoutBounds().getWidth();
+        train.setLayoutY(0);
+        train.setLayoutX(-w);
+        pane.getChildren().add(train);
+        TranslateTransition translate = new TranslateTransition(Duration.millis(1000),train);
+        translate.setByX((w+pane.getWidth())/2);
+        translate.playFromStart();
+        translate.setOnFinished(e->runnable.run());
+    }
+    public static void trainOut(Pane pane){
+        ImageView train = new ImageView(new Image(String.valueOf(ClassLoader.getSystemResource("train/1.png"))));
+        train.setPreserveRatio(true);
+        train.setFitHeight(pane.getHeight());
+        train.setViewOrder(-10);
+        double w = train.getLayoutBounds().getWidth();
+        train.setLayoutY(0);
+        train.setLayoutX((pane.getWidth()-w)/2);
+        pane.getChildren().add(train);
+        TranslateTransition translate = new TranslateTransition(Duration.millis(1000),train);
+        translate.setByX((w+pane.getWidth())/2);
+        translate.playFromStart();
+        translate.setOnFinished(e->{
+            pane.getChildren().remove(train);
+        });
     }
 }

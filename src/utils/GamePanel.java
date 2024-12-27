@@ -17,8 +17,6 @@ public class GamePanel extends Canvas {
     public Player plr = new Player(this);
     public Boss boss = new Boss(this);
     public Background background = new Background();
-    public long time;
-    public final long bgTime = (long)(10e9);
     public GameTimer timer;
     public LoveBar loveBar;
     public EnergyBar energyBar;
@@ -37,7 +35,7 @@ public class GamePanel extends Canvas {
         this.setVisible(true);
         addKeyListener();
 
-        GamePanel.setIsGameOver(false);
+        GamePanel.setIsGameOver(true);
         GamePanel.setIsPause(false);
         GamePanel.setIsRewardable(false);
     }

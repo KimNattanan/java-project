@@ -2,27 +2,26 @@ package scene;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
-import javafx.animation.TranslateTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.Fonts;
+import utils.Tools;
+
+import javax.tools.Tool;
 
 import static utils.Tools.addMouseSparkle;
 
 public class HomeScene extends Scene {
 
     private boolean playClicked = false;
-    private final ImageView train = new ImageView(new Image(String.valueOf(ClassLoader.getSystemResource("train/1.png"))));
 
     public HomeScene(Stage stage) {
         super(new Pane(),1000,600);
@@ -48,11 +47,9 @@ public class HomeScene extends Scene {
 
         addMouseSparkle(root,root,Color.WHITE);
 
-        train.setPreserveRatio(true);
-        train.setFitHeight(root.getHeight());
-        train.setViewOrder(-10);
-
         root.getChildren().addAll(btns);
+
+        Tools.trainOut(root);
     }
 
     private Button createPlayBtn(Stage stage,Pane pane){
@@ -66,9 +63,6 @@ public class HomeScene extends Scene {
 
         FadeTransition fade = new FadeTransition(Duration.millis(1000),btn);
         fade.setToValue(0);
-        fade.setOnFinished(e->{
-            stage.setScene(new GameScene(stage));
-        });
 
         ScaleTransition zoom = new ScaleTransition(Duration.millis(1000),btn);
         zoom.setByX(50);
@@ -79,7 +73,9 @@ public class HomeScene extends Scene {
             playClicked = true;
             fade.playFromStart();
             zoom.playFromStart();
-            trainIn(pane);
+            Tools.trainIn(pane,()->{
+                stage.setScene(new GameScene(stage));
+            });
         });
 
         return btn;
@@ -145,14 +141,5 @@ public class HomeScene extends Scene {
             scaleDown.playFromStart();
             fadeIn.playFromStart();
         });
-    }
-    private void trainIn(Pane pane){
-        double w = train.getLayoutBounds().getWidth();
-        train.setLayoutY(0);
-        train.setLayoutX(-w);
-        pane.getChildren().add(train);
-        TranslateTransition translate = new TranslateTransition(Duration.millis(1000),train);
-        translate.setByX((w+pane.getWidth())/2);
-        translate.playFromStart();
     }
 }
