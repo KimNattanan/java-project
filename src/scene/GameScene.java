@@ -14,6 +14,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -168,12 +169,28 @@ public class GameScene extends Scene {
         pane.setPrefSize(this.getWidth(),this.getHeight());
         pane.setAlignment(Pos.CENTER);
 
-        HBox btns = new HBox(20);
-        btns.setPrefSize(this.getWidth(),this.getHeight());
+        VBox menu = new VBox(10);
+        menu.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+        menu.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+        menu.setAlignment(Pos.CENTER);
+        menu.setPadding(new Insets(60,40,40,40));
+        menu.setBackground(Background.fill(Color.rgb(223,222,234,0.7)));
+        menu.setBorder(Border.stroke(Color.rgb(47,47,97)));
+
+        Animation menuBgAnim = createMenuBgAnim(menu);
+        menuBgAnim.playFromStart();
+
+        Text text = new Text("Nice Work!");
+        text.setFont(Fonts.getConsolas(7, FontWeight.BOLD));
+        text.setUnderline(true);
+        text.setFill(Color.rgb(200,0,0));
+
+        HBox btns = new HBox(40);
         btns.setAlignment(Pos.CENTER);
 
         Button bento = new ImageButton("ui/bento_btn.png", "ui/bento_btn_hover.png","ui/bento_btn_active.png");
         bento.setPrefSize(200,200);
+        bento.setTranslateY(15);
         bento.setOnMouseClicked(e->{
             if(e.getButton() != MouseButton.PRIMARY) return;
             gamePanel.energyBar.eatBento();
@@ -191,11 +208,13 @@ public class GameScene extends Scene {
 
         btns.getChildren().addAll(bento,coffee);
 
+        menu.getChildren().addAll(text,btns);
+
         ImageView bg = new ImageView(new Image(String.valueOf(ClassLoader.getSystemResource("background/rewards_bg.png"))));
         bg.setFitWidth(this.getWidth());
         bg.setFitHeight(this.getHeight());
 
-        pane.getChildren().addAll(bg,btns);
+        pane.getChildren().addAll(bg,menu);
         return pane;
     }
 
@@ -203,37 +222,23 @@ public class GameScene extends Scene {
         StackPane pane = new StackPane();
         pane.setPrefSize(this.getWidth(),this.getHeight());
         pane.setAlignment(Pos.CENTER_RIGHT);
-        pane.setBackground(Background.fill(Color.rgb(0,0,0,0.5)));
+        pane.setBackground(Background.fill(Color.rgb(0,0,0,0.7)));
         pane.setPadding(new Insets(10));
 
         VBox menu = new VBox(20);
         menu.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         menu.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         menu.setAlignment(Pos.CENTER);
-        menu.setBackground(Background.fill(Color.rgb(223,222,234,0.7)));
         menu.setPadding(new Insets(20));
+        menu.setBackground(Background.fill(Color.rgb(223,222,234,0.7)));
         menu.setBorder(Border.stroke(Color.rgb(47,47,97)));
         menu.setId("gameOverMenu");
 
-        final Animation menuBgAnim = new Transition() {
-
-            {
-                setCycleDuration(Duration.millis(500));
-                setInterpolator(Interpolator.EASE_IN);
-            }
-
-            @Override
-            protected void interpolate(double frac) {
-                Color vColor = new Color(1, 0, 0, 1 - frac);
-                menu.setBackground(Background.fill(Color.rgb(223,222,234,0.3+0.4*(1-frac))));
-            }
-        };
-        menuBgAnim.setCycleCount(Animation.INDEFINITE);
-        menuBgAnim.setAutoReverse(true);
+        Animation menuBgAnim = createMenuBgAnim(menu);
         menuBgAnim.playFromStart();
 
         Text score = new Text("Score: "+String.valueOf(gamePanel.timer.getHours()));
-        score.setFont(Fonts.getDefault(3, FontWeight.BOLD));
+        score.setFont(Fonts.getConsolas(3, FontWeight.BOLD));
         score.setFill(Color.rgb(0,0,0));
 
         FillTransition scoreAnim = new FillTransition(Duration.millis(500),score);
@@ -256,6 +261,25 @@ public class GameScene extends Scene {
 
         pane.getChildren().add(menu);
         return pane;
+    }
+
+    private static Animation createMenuBgAnim(Pane menu) {
+        final Animation menuBgAnim = new Transition() {
+
+            {
+                setCycleDuration(Duration.millis(500));
+                setInterpolator(Interpolator.EASE_IN);
+            }
+
+            @Override
+            protected void interpolate(double frac) {
+                Color vColor = new Color(1, 0, 0, 1 - frac);
+                menu.setBackground(Background.fill(Color.rgb(223,222,234,0.3+0.4*(1-frac))));
+            }
+        };
+        menuBgAnim.setCycleCount(Animation.INDEFINITE);
+        menuBgAnim.setAutoReverse(true);
+        return menuBgAnim;
     }
 
 

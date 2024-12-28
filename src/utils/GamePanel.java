@@ -36,7 +36,7 @@ public class GamePanel extends Canvas {
 
         GamePanel.setIsGameOver(false);
         GamePanel.setIsPause(false);
-        GamePanel.setIsRewardable(false);
+        GamePanel.setIsRewardable(true);
     }
     public void upd(long dt) throws InterruptedException {
         timer.upd(dt);
