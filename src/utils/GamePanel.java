@@ -7,7 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import ui.EnergyBar;
 import ui.GameTimer;
-import ui.LoveBar;
+import ui.MeritBar;
 import ui.SleepBar;
 
 public class GamePanel extends Canvas {
@@ -17,7 +17,7 @@ public class GamePanel extends Canvas {
     public Boss boss = new Boss(this);
     public Background background = new Background();
     public GameTimer timer;
-    public LoveBar loveBar;
+    public MeritBar meritBar;
     public EnergyBar energyBar;
     public SleepBar sleepBar;
 
@@ -30,7 +30,7 @@ public class GamePanel extends Canvas {
         background.insert("bg2", "background/spot_pattern.png");
         background.setBg2("bg2");
         timer = new GameTimer(this,background);
-        loveBar = new LoveBar(this,boss,plr);
+        meritBar = new MeritBar(this,boss,plr);
         energyBar = new EnergyBar(this,plr);
         sleepBar = new SleepBar(this,plr);
 
@@ -45,7 +45,7 @@ public class GamePanel extends Canvas {
         timer.upd(dt);
         plr.upd(dt);
         boss.upd(dt);
-        loveBar.upd(dt);
+        meritBar.upd(dt);
         energyBar.upd(dt);
         sleepBar.upd(dt);
         System.out.print(id);
@@ -56,7 +56,7 @@ public class GamePanel extends Canvas {
         boss.draw(gc);
         plr.draw(gc);
         timer.draw(gc);
-        loveBar.draw(gc);
+        meritBar.draw(gc);
         energyBar.draw(gc);
         sleepBar.draw(gc);
     }

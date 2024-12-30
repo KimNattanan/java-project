@@ -2,8 +2,8 @@ package entity;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
-import javafx.scene.media.Media;
 import utils.AnimLoader;
+import utils.AudioController;
 import utils.GamePanel;
 import utils.KeyHandler;
 import javafx.scene.media.MediaPlayer;
@@ -13,19 +13,13 @@ public class Player extends Entity {
     private final AnimLoader workAnim = new AnimLoader("player/work",0.2);
     private final AnimLoader sleepAnim = new AnimLoader("player/sleep",3.2);
     private final AnimLoader dieAnim = new AnimLoader("player/die",1);
-    private final MediaPlayer workSound;
 
     public Player(Canvas canvas){
         super(600,600,300,600);
+        AudioController.insert("plrWork","player/sound/work.mp3",1);
         setAction("idle");
         translate(canvas.getWidth()/2,canvas.getHeight()+100);
 
-        workSound = new MediaPlayer(new Media(ClassLoader.getSystemResource("player/sound/work.mp3").toString()));
-        workSound.setCycleCount(MediaPlayer.INDEFINITE);
-        workSound.setOnReady(()->{
-            workSound.play();
-            workSound.stop();
-        });
     }
 
     public void upd(long dt){
@@ -41,7 +35,7 @@ public class Player extends Entity {
         switch (action) {
             case "work" -> {
                 stopAllSound();
-                workSound.play();
+                AudioController.play("plrWork",MediaPlayer.INDEFINITE,0);
                 setAction(action, workAnim);
             }
             case "sleep" -> {
@@ -60,7 +54,7 @@ public class Player extends Entity {
         }
     }
     public void stopAllSound(){
-        if(workSound != null) workSound.stop();
+        AudioController.stop("plrWork",0);
     }
 
 }

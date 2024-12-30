@@ -12,6 +12,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -54,6 +55,11 @@ public class GameScene extends Scene {
         });
 
         Tools.trainOut(root);
+
+        AudioController.stopAll();
+        AudioController.insert("playingBgm","bgm/moonlight_lament.mp3",0);
+        AudioController.insert("gameOverBgm","bgm/lullaby_kyatto.mp3",0);
+        AudioController.play("playingBgm", MediaPlayer.INDEFINITE,0);
 
 
         AnimationTimer animation = new AnimationTimer() {
@@ -108,6 +114,9 @@ public class GameScene extends Scene {
                             gameOverPane.setOpacity(0);
                             root.getChildren().add(gameOverPane);
                             fade.playFromStart();
+
+                            AudioController.stopAll();
+                            AudioController.play("gameOverBgm",MediaPlayer.INDEFINITE,0);
                         }
                     }
                     else{
@@ -202,7 +211,7 @@ public class GameScene extends Scene {
         bento.setOnMouseClicked(e->{
             if(e.getButton() != MouseButton.PRIMARY) return;
             gamePanel.energyBar.eatBento();
-            gamePanel.loveBar.setVal(0);
+            gamePanel.meritBar.setVal(0);
             GamePanel.setIsRewardable(false);
         });
         Button coffee = new ImageButton("ui/coffee_btn.png", "ui/coffee_btn_hover.png","ui/coffee_btn_active.png");
@@ -210,7 +219,7 @@ public class GameScene extends Scene {
         coffee.setOnMouseClicked(e->{
             if(e.getButton() != MouseButton.PRIMARY) return;
             gamePanel.sleepBar.drinkCoffee();
-            gamePanel.loveBar.setVal(0);
+            gamePanel.meritBar.setVal(0);
             GamePanel.setIsRewardable(false);
         });
 

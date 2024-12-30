@@ -1,6 +1,8 @@
 package utils;
 
+import javafx.animation.*;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -29,7 +31,6 @@ public class AudioController {
         return volumes[channel];
     }
     public static void setVolume(int channel, double volume){
-        System.out.println(volume);
         if(volume<0) volume = 0;
         else if(volume>1) volume = 1;
         volumes[channel] = volume;
@@ -42,17 +43,65 @@ public class AudioController {
         MediaPlayer media = new MediaPlayer(new Media(ClassLoader.getSystemResource(path).toString()));
         audios.put(name,new Pair<>(media,channel));
         channels[channel].add(media);
+        media.setVolume(0);
         media.play();
         media.stop();
     }
-    public static void play(String name,int times){
+    public static void play(String name,int times,double fadeMs){
         Pair<MediaPlayer,Integer> audio = audios.get(name);
-        audio.getKey().setVolume(getVolume(audio.getValue()));
-        audio.getKey().setCycleCount(times);
-        audio.getKey().play();
+        MediaPlayer media = audio.getKey();
+        int channel = audio.getValue();
+
+        media.setCycleCount(times);
+        if(fadeMs>0){
+            final Animation anim = new Transition() {
+                {
+                    setCycleDuration(Duration.millis(fadeMs));
+                    setInterpolator(Interpolator.LINEAR);
+                }
+                @Override
+                protected void interpolate(double frac) {
+                    media.setVolume(frac*getVolume(channel));
+                }
+            };
+            anim.setCycleCount(1);
+            anim.setAutoReverse(false);
+            media.setVolume(0);
+            media.play();
+            anim.play();
+        }
+        else{
+            media.setVolume(getVolume(channel));
+            media.play();
+        }
     }
-    public static void stop(String name){
-        audios.get(name).getKey().stop();
+    public static void stop(String name,double fadeMs){
+        Pair<MediaPlayer,Integer> audio = audios.get(name);
+        MediaPlayer media = audio.getKey();
+        int channel = audio.getValue();
+
+        if(fadeMs>0){
+            final Animation anim = new Transition() {
+                {
+                    setCycleDuration(Duration.millis(fadeMs));
+                    setInterpolator(Interpolator.LINEAR);
+                }
+                @Override
+                protected void interpolate(double frac) {
+                    media.setVolume((1-frac)*getVolume(channel));
+                }
+            };
+            anim.setCycleCount(1);
+            anim.setAutoReverse(false);
+            anim.play();
+            anim.setOnFinished(e->media.stop());
+        }
+        else media.stop();
+    }
+    public static void stopAll(){
+        for(Pair<MediaPlayer,Integer> audio:audios.values()){
+            audio.getKey().stop();
+        }
     }
 
     public static Slider createSlider(int channel){

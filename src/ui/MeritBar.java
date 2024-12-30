@@ -10,7 +10,7 @@ import utils.Fonts;
 import utils.GamePanel;
 import utils.KeyHandler;
 
-public class LoveBar extends Bar {
+public class MeritBar extends Bar {
     private final Canvas canvas;
     private final Boss boss;
     private final Player plr;
@@ -19,8 +19,8 @@ public class LoveBar extends Bar {
     private final Color barColor = Color.rgb(255,56,176);
     private final Color barColorHover = Color.rgb(255,133,205);
 
-    public LoveBar(Canvas canvas, Boss boss, Player plr){
-        super(0,33,canvas.getWidth()/2,25,2, "LOVE",Fonts.getDefault(1,FontWeight.BOLD));
+    public MeritBar(Canvas canvas, Boss boss, Player plr){
+        super(0,33,canvas.getWidth()/2,25,2, "MERIT",Fonts.getDefault(1,FontWeight.BOLD));
         setBarColor(barColor);
         setBorderColor(Color.BLACK);
         setTitleColor(Color.WHITE);

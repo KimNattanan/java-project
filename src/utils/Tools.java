@@ -124,6 +124,7 @@ public class Tools {
             tab.getChildren().addAll(titleBox,closeBtn);
             HBox.setHgrow(titleBox,Priority.ALWAYS);
             window.getChildren().add(tab);
+            window.setMinWidth(text.getLayoutBounds().getWidth()+2*862*0.05);
         }
         return window;
     }
