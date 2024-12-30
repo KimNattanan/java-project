@@ -1,6 +1,7 @@
 package ui;
 
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 
 public class ImageButton extends Button {
     private final String defaultImg,hoverImg,activeImg;
@@ -10,13 +11,10 @@ public class ImageButton extends Button {
         this.hoverImg = hoverImg;
         this.activeImg = activeImg;
 
-        this.setOnMouseEntered(e->setMyHover(true));
-        this.setOnMouseDragEntered(e->setMyHover(true));
-        this.setOnMouseExited(e->setMyHover(false));
-        this.setOnMouseDragExited(e->setMyHover(false));
-
-        this.setOnMousePressed(e->setMyActive(true));
-        this.setOnMouseReleased(e->setMyActive(false));
+        this.addEventHandler(MouseEvent.MOUSE_ENTERED, e->setMyHover(true));
+        this.addEventHandler(MouseEvent.MOUSE_EXITED,e->setMyHover(false));
+        this.addEventHandler(MouseEvent.MOUSE_PRESSED,e->setMyActive(true));
+        this.addEventHandler(MouseEvent.MOUSE_RELEASED,e->setMyActive(false));
 
         upd();
     }

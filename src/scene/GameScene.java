@@ -3,9 +3,9 @@ package scene;
 import javafx.animation.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -13,18 +13,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
-import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import ui.ImageButton;
-import utils.Fonts;
-import utils.GamePanel;
-import utils.KeyHandler;
-import utils.Tools;
+import utils.*;
 
 public class GameScene extends Scene {
     private long t0 = -1;
@@ -38,7 +32,7 @@ public class GameScene extends Scene {
         gamePanel.setViewOrder(20);
         Tools.addMouseSparkle(root,root, Color.BLACK);
 
-        VBox pauseMenu = createPauseMenu(stage,root);
+        StackPane pauseMenu = createPauseMenu(stage,root);
         pauseMenu.setViewOrder(15);
         pauseMenu.setVisible(false);
 
@@ -141,6 +135,9 @@ public class GameScene extends Scene {
                 gamePanel.paintComponent();
             }
         };
+        stage.sceneProperty().addListener((e,prev,cur)->{
+            if(prev==this) animation.stop();
+        });
         animation.start();
     }
 
@@ -151,16 +148,28 @@ public class GameScene extends Scene {
         this.setOnMouseDragged(e -> KeyHandler.setMousePos(e.getX(),e.getY()));
     }
 
-    private VBox createPauseMenu(Stage stage,Pane root) {
-        VBox pane = new VBox(20);
+    private StackPane createPauseMenu(Stage stage,Pane root) {
+        StackPane pane = new StackPane();
         pane.setPrefSize(this.getWidth(),this.getHeight());
         pane.setAlignment(Pos.CENTER);
         pane.setBackground(Background.fill(Color.rgb(0,0,0,0.3)));
 
-        Button home = createHomeButton(stage,root);
-        home.setPrefSize(549,137);
+        VBox menu = Tools.createWindowUI(true,"pause");
+        Button closeBtn = (Button)menu.lookup("#closeBtn");
+        closeBtn.setOnAction(e -> GamePanel.setIsPause(false));
 
-        pane.getChildren().add(home);
+        VBox body = new VBox(20);
+        body.setPadding(new Insets(0,20,20,20));
+        body.setAlignment(Pos.CENTER);
+
+        Pane audioPane = AudioController.createPane();
+
+        Button home = createHomeButton(stage,root);
+        home.setPrefSize(549*0.3,137*0.3);
+
+        body.getChildren().addAll(audioPane,home);
+        menu.getChildren().add(body);
+        pane.getChildren().add(menu);
         return pane;
     }
 
@@ -169,21 +178,20 @@ public class GameScene extends Scene {
         pane.setPrefSize(this.getWidth(),this.getHeight());
         pane.setAlignment(Pos.CENTER);
 
-        VBox menu = new VBox(10);
-        menu.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        menu.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        menu.setAlignment(Pos.CENTER);
+        VBox menu = Tools.createWindowUI(false);
         menu.setPadding(new Insets(60,40,40,40));
-        menu.setBackground(Background.fill(Color.rgb(223,222,234,0.7)));
-        menu.setBorder(Border.stroke(Color.rgb(47,47,97)));
-
-        Animation menuBgAnim = createMenuBgAnim(menu);
-        menuBgAnim.playFromStart();
 
         Text text = new Text("Nice Work!");
         text.setFont(Fonts.getConsolas(7, FontWeight.BOLD));
         text.setUnderline(true);
-        text.setFill(Color.rgb(200,0,0));
+
+        FillTransition textAnim = new FillTransition(Duration.millis(500),text);
+        textAnim.setFromValue(Color.rgb(200,0,0));
+        textAnim.setToValue(Color.rgb(255,0,0));
+        textAnim.setInterpolator(Interpolator.EASE_IN);
+        textAnim.setAutoReverse(true);
+        textAnim.setCycleCount(Animation.INDEFINITE);
+        textAnim.playFromStart();
 
         HBox btns = new HBox(40);
         btns.setAlignment(Pos.CENTER);
@@ -225,17 +233,9 @@ public class GameScene extends Scene {
         pane.setBackground(Background.fill(Color.rgb(0,0,0,0.7)));
         pane.setPadding(new Insets(10));
 
-        VBox menu = new VBox(20);
-        menu.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        menu.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        menu.setAlignment(Pos.CENTER);
+        VBox menu = Tools.createWindowUI(false);
         menu.setPadding(new Insets(20));
-        menu.setBackground(Background.fill(Color.rgb(223,222,234,0.7)));
-        menu.setBorder(Border.stroke(Color.rgb(47,47,97)));
         menu.setId("gameOverMenu");
-
-        Animation menuBgAnim = createMenuBgAnim(menu);
-        menuBgAnim.playFromStart();
 
         Text score = new Text("Score: "+String.valueOf(gamePanel.timer.getHours()));
         score.setFont(Fonts.getConsolas(3, FontWeight.BOLD));
@@ -255,7 +255,7 @@ public class GameScene extends Scene {
         Button retry = createRetryButton(stage,root);
         retry.setPrefSize(549*0.3,137*0.3);
 
-        btns.getChildren().addAll(home,retry);
+        btns.getChildren().addAll(retry,home);
 
         menu.getChildren().addAll(score,btns);
 
@@ -263,28 +263,9 @@ public class GameScene extends Scene {
         return pane;
     }
 
-    private static Animation createMenuBgAnim(Pane menu) {
-        final Animation menuBgAnim = new Transition() {
-
-            {
-                setCycleDuration(Duration.millis(500));
-                setInterpolator(Interpolator.EASE_IN);
-            }
-
-            @Override
-            protected void interpolate(double frac) {
-                Color vColor = new Color(1, 0, 0, 1 - frac);
-                menu.setBackground(Background.fill(Color.rgb(223,222,234,0.3+0.4*(1-frac))));
-            }
-        };
-        menuBgAnim.setCycleCount(Animation.INDEFINITE);
-        menuBgAnim.setAutoReverse(true);
-        return menuBgAnim;
-    }
-
-
     private Button createHomeButton(Stage stage,Pane root){
         Button home = new ImageButton("ui/home_btn.png", "ui/home_btn_hover.png","ui/home_btn_active.png");
+        home.setCursor(Cursor.HAND);
         home.setOnMouseClicked(e->{
             if(changingScene || e.getButton() != MouseButton.PRIMARY) return;
             changingScene = true;
@@ -297,6 +278,7 @@ public class GameScene extends Scene {
 
     private Button createRetryButton(Stage stage,Pane root){
         Button retry = new ImageButton("ui/retry_btn.png","ui/retry_btn_hover.png","ui/retry_btn_active.png");
+        retry.setCursor(Cursor.HAND);
         retry.setOnMouseClicked(e->{
             if(changingScene  || e.getButton() != MouseButton.PRIMARY) return;
             changingScene = true;

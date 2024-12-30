@@ -20,19 +20,17 @@ public class Player extends Entity {
         setAction("idle");
         translate(canvas.getWidth()/2,canvas.getHeight()+100);
 
-        Media media = new Media(ClassLoader.getSystemResource("player/sound/work.mp3").toString());
-        workSound = new MediaPlayer(media);
+        workSound = new MediaPlayer(new Media(ClassLoader.getSystemResource("player/sound/work.mp3").toString()));
+        workSound.setCycleCount(MediaPlayer.INDEFINITE);
         workSound.setOnReady(()->{
             workSound.play();
             workSound.stop();
-            System.out.println("ready!!");
         });
-        workSound.setCycleCount(MediaPlayer.INDEFINITE);
     }
 
     public void upd(long dt){
         if(!getAction().equals("sleep") && !getAction().equals("die")) {
-            if (KeyHandler.getKeyPressed(KeyCode.SPACE) && !GamePanel.getIsRewardable()) setAction("work");
+            if (KeyHandler.getKeyPressed(KeyCode.W) && !GamePanel.getIsRewardable()) setAction("work");
             else setAction("idle");
         }
 

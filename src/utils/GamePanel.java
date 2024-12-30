@@ -5,7 +5,6 @@ import entity.Boss;
 import entity.Player;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyEvent;
 import ui.EnergyBar;
 import ui.GameTimer;
 import ui.LoveBar;
@@ -22,6 +21,9 @@ public class GamePanel extends Canvas {
     public EnergyBar energyBar;
     public SleepBar sleepBar;
 
+    public static int cnt;
+    private int id;
+
     public GamePanel(double w,double h){
         super(w,h);
 
@@ -37,6 +39,7 @@ public class GamePanel extends Canvas {
         GamePanel.setIsGameOver(false);
         GamePanel.setIsPause(false);
         GamePanel.setIsRewardable(true);
+        id=++GamePanel.cnt;
     }
     public void upd(long dt) throws InterruptedException {
         timer.upd(dt);
@@ -45,6 +48,8 @@ public class GamePanel extends Canvas {
         loveBar.upd(dt);
         energyBar.upd(dt);
         sleepBar.upd(dt);
+        System.out.print(id);
+        System.out.println(": upd!");
     }
     public void paintComponent(){
         background.draw(gc);

@@ -8,20 +8,20 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import utils.AudioController;
 import utils.Fonts;
 import utils.Tools;
-
-import javax.tools.Tool;
-
-import static utils.Tools.addMouseSparkle;
 
 public class HomeScene extends Scene {
 
     private boolean playClicked = false;
+    private final VBox settingPane = Tools.createWindowUI(true,"setting");
 
     public HomeScene(Stage stage) {
         super(new Pane(),1000,600);
@@ -31,7 +31,6 @@ public class HomeScene extends Scene {
         VBox btns = new VBox(20);
         btns.setPadding(new Insets(50,0,50,0));
         btns.setAlignment(Pos.TOP_CENTER);
-        btns.setViewOrder(-1);
 
         Button playBtn = createPlayBtn(stage,root);
         Button tutorialBtn = createTutorialBtn(stage);
@@ -45,11 +44,30 @@ public class HomeScene extends Scene {
             btns.setLayoutY(root.getHeight()-val.doubleValue());
         });
 
-        addMouseSparkle(root,root,Color.WHITE);
+        createSettingPane();
+        settingPane.setLayoutY(20);
+        settingPane.widthProperty().addListener((_,_,val)->{
+            settingPane.setLayoutX((root.getWidth()-val.doubleValue())/2);
+        });
 
-        root.getChildren().addAll(btns);
+        root.getChildren().addAll(btns,settingPane);
 
         Tools.trainOut(root);
+        Tools.addMouseSparkle(root,root,Color.WHITE);
+
+        AudioController.insert("homeBgm","bgm/listen_kyatto.mp3",0);
+        AudioController.play("homeBgm",MediaPlayer.INDEFINITE);
+    }
+
+    private void createSettingPane(){
+        settingPane.setVisible(false);
+        settingPane.setViewOrder(-1);
+        Button closeBtn = (Button)settingPane.lookup("#closeBtn");
+        closeBtn.setOnAction(e->settingPane.setVisible(false));
+
+        Pane audioPane = AudioController.createPane();
+        audioPane.setPadding(new Insets(0,100,20,100));
+        settingPane.getChildren().addAll(audioPane);
     }
 
     private Button createPlayBtn(Stage stage,Pane pane){
@@ -98,6 +116,11 @@ public class HomeScene extends Scene {
             "-fx-text-fill: rgb(0,20,20)"
         );
         addTransition(btn);
+
+        btn.setOnAction(e->{
+            settingPane.setVisible(!settingPane.isVisible());
+        });
+
         return btn;
     }
 
