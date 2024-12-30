@@ -85,7 +85,6 @@ public class HomeScene extends Scene {
         Tools.addMouseSparkle(root,root,Color.WHITE);
 
         AudioController.stopAll();
-        AudioController.insert("homeBgm","bgm/listen_kyatto.mp3",0);
         AudioController.play("homeBgm",MediaPlayer.INDEFINITE,2000);
     }
 
@@ -139,6 +138,7 @@ public class HomeScene extends Scene {
         lBtn.setVisible(false);
 
         lBtn.setOnAction(e->{
+            AudioController.play("buttonClick2",1,0);
             body.getChildren().remove(tutorialPages[curTutorialPage]);
             --curTutorialPage;
             if(curTutorialPage==0) lBtn.setVisible(false);
@@ -146,6 +146,7 @@ public class HomeScene extends Scene {
             body.getChildren().add(tutorialPages[curTutorialPage]);
         });
         rBtn.setOnAction(e->{
+            AudioController.play("buttonClick2",1,0);
             body.getChildren().remove(tutorialPages[curTutorialPage]);
             ++curTutorialPage;
             if(curTutorialPage!=0) lBtn.setVisible(true);
@@ -185,6 +186,7 @@ public class HomeScene extends Scene {
             if(playClicked) return;
             playClicked = true;
             AudioController.stop("homeBgm",2000);
+            AudioController.play("buttonClick",1,0);
             fade.playFromStart();
             zoom.playFromStart();
             Tools.trainIn(pane,()->{
@@ -204,6 +206,7 @@ public class HomeScene extends Scene {
         addTransition(btn);
 
         btn.setOnAction(e->{
+            AudioController.play("buttonClick2",1,0);
             if(settingsPane.isVisible()) settingsPane.setVisible(false);
             tutorialPane.setVisible(!tutorialPane.isVisible());
         });
@@ -220,6 +223,7 @@ public class HomeScene extends Scene {
         addTransition(btn);
 
         btn.setOnAction(e->{
+            AudioController.play("buttonClick2",1,0);
             if(tutorialPane.isVisible()) tutorialPane.setVisible(false);
             settingsPane.setVisible(!settingsPane.isVisible());
         });

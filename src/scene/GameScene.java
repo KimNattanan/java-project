@@ -57,8 +57,6 @@ public class GameScene extends Scene {
         Tools.trainOut(root);
 
         AudioController.stopAll();
-        AudioController.insert("playingBgm","bgm/moonlight_lament.mp3",0);
-        AudioController.insert("gameOverBgm","bgm/lullaby_kyatto.mp3",0);
         AudioController.play("playingBgm", MediaPlayer.INDEFINITE,0);
 
 
@@ -208,16 +206,16 @@ public class GameScene extends Scene {
         Button bento = new ImageButton("ui/bento_btn.png", "ui/bento_btn_hover.png","ui/bento_btn_active.png");
         bento.setPrefSize(200,200);
         bento.setTranslateY(15);
-        bento.setOnMouseClicked(e->{
-            if(e.getButton() != MouseButton.PRIMARY) return;
+        bento.setOnAction(e->{
+            AudioController.play("buttonClick",1,0);
             gamePanel.energyBar.eatBento();
             gamePanel.meritBar.setVal(0);
             GamePanel.setIsRewardable(false);
         });
         Button coffee = new ImageButton("ui/coffee_btn.png", "ui/coffee_btn_hover.png","ui/coffee_btn_active.png");
         coffee.setPrefSize(200,200);
-        coffee.setOnMouseClicked(e->{
-            if(e.getButton() != MouseButton.PRIMARY) return;
+        coffee.setOnAction(e->{
+            AudioController.play("buttonClick",1,0);
             gamePanel.sleepBar.drinkCoffee();
             gamePanel.meritBar.setVal(0);
             GamePanel.setIsRewardable(false);
@@ -275,9 +273,10 @@ public class GameScene extends Scene {
     private Button createHomeButton(Stage stage,Pane root){
         Button home = new ImageButton("ui/home_btn.png", "ui/home_btn_hover.png","ui/home_btn_active.png");
         home.setCursor(Cursor.HAND);
-        home.setOnMouseClicked(e->{
-            if(changingScene || e.getButton() != MouseButton.PRIMARY) return;
+        home.setOnAction(e->{
+            if(changingScene) return;
             changingScene = true;
+            AudioController.play("buttonClick",1,0);
             Tools.trainIn(root,()->{
                 stage.setScene(new HomeScene(stage));
             });
@@ -288,9 +287,10 @@ public class GameScene extends Scene {
     private Button createRetryButton(Stage stage,Pane root){
         Button retry = new ImageButton("ui/retry_btn.png","ui/retry_btn_hover.png","ui/retry_btn_active.png");
         retry.setCursor(Cursor.HAND);
-        retry.setOnMouseClicked(e->{
-            if(changingScene  || e.getButton() != MouseButton.PRIMARY) return;
+        retry.setOnAction(e->{
+            if(changingScene) return;
             changingScene = true;
+            AudioController.play("buttonClick",1,0);
             Tools.trainIn(root,()->{
                 stage.setScene(new GameScene(stage));
             });

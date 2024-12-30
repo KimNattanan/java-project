@@ -6,6 +6,7 @@ import javafx.geometry.BoundingBox;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
+import utils.AudioController;
 import utils.Fonts;
 import utils.GamePanel;
 import utils.KeyHandler;
@@ -42,8 +43,9 @@ public class MeritBar extends Bar {
                 setSpeed(0);
             }
 
-            if (getVal() == 1) {
+            if (getVal() == 1 && !GamePanel.getIsRewardable()) {
                 GamePanel.setIsRewardable(true);
+                AudioController.play("rewardSfx",1,0);
             }
         }
         else{

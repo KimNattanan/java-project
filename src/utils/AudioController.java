@@ -53,6 +53,7 @@ public class AudioController {
         int channel = audio.getValue();
 
         media.setCycleCount(times);
+        media.seek(Duration.ZERO);
         if(fadeMs>0){
             final Animation anim = new Transition() {
                 {
