@@ -4,6 +4,7 @@ import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -21,6 +22,8 @@ import utils.AudioController;
 import utils.Fonts;
 import utils.Tools;
 
+import java.awt.*;
+import java.net.URI;
 import java.util.ArrayList;
 
 public class HomeScene extends Scene {
@@ -28,8 +31,9 @@ public class HomeScene extends Scene {
     private boolean playClicked = false;
     private final VBox settingsPane = Tools.createWindowUI(true,"Settings");
     private final VBox tutorialPane = Tools.createWindowUI(true,"Tutorial");
+    private final VBox creditsPane = Tools.createWindowUI(true,"Credits");
     private int curTutorialPage = 0;
-    private Text[] tutorialPages = {
+    private final Text[] tutorialPages = {
     new Text("" +
             "Press 'W' to work and 'Esc' to pause."
     ),
@@ -42,7 +46,7 @@ public class HomeScene extends Scene {
             "If the merit is full, you will have to choose 1 reward from your manager.\n" +
             "There are 2 options as follows:\n" +
             " - Manager's Bento: Your energy will become max again from eating this bento.\n" +
-            " - Coffee: You will receive 60% of your max awakeness from drinking this."
+            " - Coffee: You will receive 70% of your max awakeness and 30% of your max energy from drinking this."
     )
     };
 
@@ -56,21 +60,20 @@ public class HomeScene extends Scene {
         btns.setAlignment(Pos.TOP_CENTER);
 
         Button playBtn = createPlayBtn(stage,root);
-        Button tutorialBtn = createTutorialBtn(stage);
-        Button settingsBtn = createSettingsBtn(stage);
+        Button tutorialBtn = createTutorialBtn();
+        Button settingsBtn = createSettingsBtn();
+        Button creditsBtn = createCreditsBtn();
 
-        btns.getChildren().addAll(playBtn,tutorialBtn,settingsBtn);
+        HBox setNcreBtns = new HBox(20);
+        setNcreBtns.setAlignment(Pos.CENTER);
+        setNcreBtns.getChildren().addAll(settingsBtn,creditsBtn);
+
+        btns.getChildren().addAll(playBtn,tutorialBtn,setNcreBtns);
         btns.setLayoutX(0);
         btns.setPrefWidth(root.getWidth());
 
         btns.heightProperty().addListener((_,_,val)->{
             btns.setLayoutY(root.getHeight()-val.doubleValue());
-        });
-
-        createSettingsPane();
-        settingsPane.setLayoutY(20);
-        settingsPane.widthProperty().addListener((_,_,val)->{
-            settingsPane.setLayoutX((root.getWidth()-val.doubleValue())/2);
         });
 
         createTutorialPane();
@@ -79,24 +82,25 @@ public class HomeScene extends Scene {
             tutorialPane.setLayoutX((root.getWidth()-val.doubleValue())/2);
         });
 
-        root.getChildren().addAll(btns,settingsPane,tutorialPane);
+        createSettingsPane();
+        settingsPane.setLayoutY(20);
+        settingsPane.widthProperty().addListener((_,_,val)->{
+            settingsPane.setLayoutX((root.getWidth()-val.doubleValue())/2);
+        });
+
+        createCreditsPane();
+        creditsPane.setLayoutY(20);
+        creditsPane.widthProperty().addListener((_,_,val)->{
+            creditsPane.setLayoutX((root.getWidth()-val.doubleValue())/2);
+        });
+
+        root.getChildren().addAll(btns,settingsPane,tutorialPane,creditsPane);
 
         Tools.trainOut(root);
         Tools.addMouseSparkle(root,root,Color.WHITE);
 
         AudioController.stopAll();
         AudioController.play("homeBgm",MediaPlayer.INDEFINITE,2000);
-    }
-
-    private void createSettingsPane(){
-        settingsPane.setVisible(false);
-        settingsPane.setViewOrder(-1);
-        Button closeBtn = (Button)settingsPane.lookup("#closeBtn");
-        closeBtn.setOnAction(e->settingsPane.setVisible(false));
-
-        Pane audioPane = AudioController.createPane();
-        audioPane.setPadding(new Insets(0,100,20,100));
-        settingsPane.getChildren().addAll(audioPane);
     }
 
     private void createTutorialPane(){
@@ -166,6 +170,88 @@ public class HomeScene extends Scene {
         HBox.setHgrow(btns,Priority.ALWAYS);
     }
 
+    private void createSettingsPane(){
+        settingsPane.setVisible(false);
+        settingsPane.setViewOrder(-1);
+        Button closeBtn = (Button)settingsPane.lookup("#closeBtn");
+        closeBtn.setOnAction(e->settingsPane.setVisible(false));
+
+        Pane audioPane = AudioController.createPane();
+        audioPane.setPadding(new Insets(0,100,20,100));
+        settingsPane.getChildren().addAll(audioPane);
+    }
+
+    private void createCreditsPane(){
+        creditsPane.setVisible(false);
+        creditsPane.setViewOrder(-1);
+        Button closeBtn = (Button)creditsPane.lookup("#closeBtn");
+        closeBtn.setOnAction(e->creditsPane.setVisible(false));
+
+        VBox body = new VBox(20);
+        body.setPadding(new Insets(0,20,20,20));
+
+        HBox row1 = new HBox();
+        row1.setAlignment(Pos.CENTER_LEFT);
+        HBox row2 = new HBox();
+        row2.setAlignment(Pos.CENTER_LEFT);
+
+        Text bgmText = new Text("BGM:  ");
+        bgmText.setFont(Fonts.getDefault(2,FontWeight.NORMAL));
+        bgmText.setFill(Color.BLACK);
+
+        Text illustText = new Text("Illust:  ");
+        illustText.setFont(Fonts.getDefault(2,FontWeight.NORMAL));
+        illustText.setFill(Color.BLACK);
+
+        Button kyattoLink = new Button("KyattoWorks");
+        kyattoLink.setFont(Fonts.getDefault(2,FontWeight.NORMAL));
+        kyattoLink.setTextFill(Color.rgb(0,77,222));
+        kyattoLink.setCursor(Cursor.HAND);
+        kyattoLink.setStyle("-fx-background-color: transparent");
+        kyattoLink.setPadding(new Insets(0));
+        kyattoLink.setOnAction(e->{
+            try {
+                URI uri = new URI("https://safuworks.com");
+                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                    Desktop.getDesktop().browse(uri);
+                } else {
+                    System.out.println("Desktop browsing is not supported on this platform.");
+                }
+            } catch (Exception er) {
+                System.out.println(er);
+            }
+        });
+        kyattoLink.setOnMouseEntered(e->kyattoLink.setUnderline(true));
+        kyattoLink.setOnMouseExited(e->kyattoLink.setUnderline(false));
+
+        Button hutabaLink = new Button("HUTABA free illust");
+        hutabaLink.setFont(Fonts.getDefault(2,FontWeight.NORMAL));
+        hutabaLink.setTextFill(Color.rgb(0,77,222));
+        hutabaLink.setCursor(Cursor.HAND);
+        hutabaLink.setStyle("-fx-background-color: transparent");
+        hutabaLink.setPadding(new Insets(0));
+        hutabaLink.setOnAction(e->{
+            try {
+                URI uri = new URI("https://eiyoushi-hutaba.com/");
+                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                    Desktop.getDesktop().browse(uri);
+                } else {
+                    System.out.println("Desktop browsing is not supported on this platform.");
+                }
+            } catch (Exception er) {
+                System.out.println(er);
+            }
+        });
+        hutabaLink.setOnMouseEntered(e->hutabaLink.setUnderline(true));
+        hutabaLink.setOnMouseExited(e->hutabaLink.setUnderline(false));
+
+        row1.getChildren().addAll(bgmText,kyattoLink);
+        row2.getChildren().addAll(illustText,hutabaLink);
+        body.getChildren().addAll(row1,row2);
+
+        creditsPane.getChildren().add(body);
+    }
+
     private Button createPlayBtn(Stage stage,Pane pane){
         Button btn = new Button("Go to Work!");
         btn.setFont(Fonts.getDefault(6, FontWeight.BOLD));
@@ -196,7 +282,7 @@ public class HomeScene extends Scene {
 
         return btn;
     }
-    private Button createTutorialBtn(Stage stage){
+    private Button createTutorialBtn(){
         Button btn = new Button("Tutorial");
         btn.setFont(Fonts.getDefault(6, FontWeight.NORMAL));
         btn.setStyle(
@@ -208,24 +294,44 @@ public class HomeScene extends Scene {
         btn.setOnAction(e->{
             AudioController.play("buttonClick2",1,0);
             if(settingsPane.isVisible()) settingsPane.setVisible(false);
+            if(creditsPane.isVisible()) creditsPane.setVisible(false);
             tutorialPane.setVisible(!tutorialPane.isVisible());
         });
 
         return btn;
     }
-    private Button createSettingsBtn(Stage stage){
+    private Button createSettingsBtn(){
         Button btn = new Button("Settings");
-        btn.setFont(Fonts.getDefault(6, FontWeight.NORMAL));
+        btn.setFont(Fonts.getDefault(5, FontWeight.NORMAL));
         btn.setStyle(
-            "-fx-background-color: transparent;" +
-            "-fx-text-fill: rgb(0,20,20)"
+                "-fx-background-color: transparent;" +
+                        "-fx-text-fill: rgb(0,20,20)"
         );
         addTransition(btn);
 
         btn.setOnAction(e->{
             AudioController.play("buttonClick2",1,0);
             if(tutorialPane.isVisible()) tutorialPane.setVisible(false);
+            if(creditsPane.isVisible()) creditsPane.setVisible(false);
             settingsPane.setVisible(!settingsPane.isVisible());
+        });
+
+        return btn;
+    }
+    private Button createCreditsBtn(){
+        Button btn = new Button("Credits");
+        btn.setFont(Fonts.getDefault(5, FontWeight.NORMAL));
+        btn.setStyle(
+                "-fx-background-color: transparent;" +
+                        "-fx-text-fill: rgb(0,20,20)"
+        );
+        addTransition(btn);
+
+        btn.setOnAction(e->{
+            AudioController.play("buttonClick2",1,0);
+            if(tutorialPane.isVisible()) tutorialPane.setVisible(false);
+            if(settingsPane.isVisible()) settingsPane.setVisible(false);
+            creditsPane.setVisible(!creditsPane.isVisible());
         });
 
         return btn;

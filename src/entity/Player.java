@@ -9,22 +9,24 @@ import utils.KeyHandler;
 import javafx.scene.media.MediaPlayer;
 
 public class Player extends Entity {
+    private final GamePanel gamePanel;
     private final AnimLoader idleAnim = new AnimLoader("player/idle",1);
     private final AnimLoader workAnim = new AnimLoader("player/work",0.2);
     private final AnimLoader sleepAnim = new AnimLoader("player/sleep",3.2);
     private final AnimLoader dieAnim = new AnimLoader("player/die",1);
 
-    public Player(Canvas canvas){
+    public Player(GamePanel gamePanel){
         super(600,600,300,600);
+        this.gamePanel = gamePanel;
         AudioController.insert("plrWork","player/sound/work.mp3",1);
         setAction("idle");
-        translate(canvas.getWidth()/2,canvas.getHeight()+100);
+        translate(gamePanel.getWidth()/2,gamePanel.getHeight()+100);
 
     }
 
     public void upd(long dt){
         if(!getAction().equals("sleep") && !getAction().equals("die")) {
-            if (KeyHandler.getKeyPressed(KeyCode.W) && !GamePanel.getIsRewardable()) setAction("work");
+            if (KeyHandler.getKeyPressed(KeyCode.W) && !gamePanel.getIsRewardable()) setAction("work");
             else setAction("idle");
         }
 
@@ -45,7 +47,7 @@ public class Player extends Entity {
             case "die" -> {
                 stopAllSound();
                 setAction(action, dieAnim);
-                GamePanel.setIsGameOver(true);
+                gamePanel.setIsGameOver(true);
             }
             default -> {
                 stopAllSound();

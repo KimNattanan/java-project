@@ -9,10 +9,10 @@ import utils.KeyHandler;
 
 public class EnergyBar extends Bar {
     private final Player plr;
-    private final double normalSpeed = -0.05; // portion per sec
-    private final double workSpeed = -0.075; // portion per sec
+    private final double normalSpeed = -0.03; // portion per sec
+    private final double workSpeed = -0.09; // portion per sec
     private final double sleepSpeed = -0.01; // portion per sec
-    private final double bentoValue = 0.7;
+    private final double bentoValue = 1.0;
     private final Color barColor = Color.rgb(0,149,87);
     private final Color barColorHover = Color.rgb(123,255,201);
 

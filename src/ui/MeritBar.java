@@ -12,7 +12,7 @@ import utils.GamePanel;
 import utils.KeyHandler;
 
 public class MeritBar extends Bar {
-    private final Canvas canvas;
+    private final GamePanel gamePanel;
     private final Boss boss;
     private final Player plr;
     private final double increaseSpeed = 0.3; // portion per sec
@@ -20,20 +20,20 @@ public class MeritBar extends Bar {
     private final Color barColor = Color.rgb(255,56,176);
     private final Color barColorHover = Color.rgb(255,133,205);
 
-    public MeritBar(Canvas canvas, Boss boss, Player plr){
-        super(0,33,canvas.getWidth()/2,25,2, "MERIT",Fonts.getDefault(1,FontWeight.BOLD));
+    public MeritBar(GamePanel gamePanel, Boss boss, Player plr){
+        super(0,33,gamePanel.getWidth()/2,25,2, "MERIT",Fonts.getDefault(1,FontWeight.BOLD));
         setBarColor(barColor);
         setBorderColor(Color.BLACK);
         setTitleColor(Color.WHITE);
-        this.canvas = canvas;
+        this.gamePanel = gamePanel;
         this.boss = boss;
         this.plr = plr;
     }
     public void upd(long dt){
-        if(!GamePanel.getIsRewardable()) {
+        if(!gamePanel.getIsRewardable()) {
             BoundingBox bossBox = boss.getBoundingBox();
-            if ((bossBox.getMinX() > 0 && bossBox.getMinX() < canvas.getWidth()) ||
-                    (bossBox.getMaxX() > 0 && bossBox.getMaxX() < canvas.getWidth())) {
+            if ((bossBox.getMinX() > 0 && bossBox.getMinX() < gamePanel.getWidth()) ||
+                    (bossBox.getMaxX() > 0 && bossBox.getMaxX() < gamePanel.getWidth())) {
                 if (plr.getAction().equals("work")) { // increase
                     setSpeed(increaseSpeed);
                 } else { // decrease
@@ -43,8 +43,9 @@ public class MeritBar extends Bar {
                 setSpeed(0);
             }
 
-            if (getVal() == 1 && !GamePanel.getIsRewardable()) {
-                GamePanel.setIsRewardable(true);
+            if (getVal() == 1 && !gamePanel.getIsRewardable()) {
+                gamePanel.setIsRewardable(true);
+                System.out.println("www");
                 AudioController.play("rewardSfx",1,0);
             }
         }

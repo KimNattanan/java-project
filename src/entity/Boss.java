@@ -7,6 +7,7 @@ import utils.GamePanel;
 import static utils.Tools.mathRnd;
 
 public class Boss extends Entity{
+    private final GamePanel gamePanel;
     private final AnimLoader idleAnim = new AnimLoader("boss/idle",2),
                              walkLeftAnim = new AnimLoader("boss/walkLeft",1.2),
                              walkRightAnim = new AnimLoader("boss/walkRight",1.2);
@@ -16,16 +17,17 @@ public class Boss extends Entity{
     private final double minSpeed = 200, // px/s
                          maxSpeed = 1500; // px/s
     private long cooldown;
-    private final long minCooldown = (long)(1e9), // nanosec
-                       maxCooldown = (long)(8e9); // nanosec
+    private final long minCooldown = (long)(5e8), // nanosec
+                       maxCooldown = (long)(7e9); // nanosec
     private final double stopChance = 0.5/1e2;
     private final long minStopTime = (long)(1e9),
                        maxStopTime = (long)(4e9);
 
-    public Boss(Canvas canvas){
+    public Boss(GamePanel gamePanel){
         super(192*1.5,593*1.5);
+        this.gamePanel = gamePanel;
         leftmost = -(getW()/2);
-        rightmost = canvas.getWidth() - leftmost;
+        rightmost = gamePanel.getWidth() - leftmost;
 
         translate(leftmost,500);
         setAction("walkRight",walkRightAnim);
@@ -35,7 +37,7 @@ public class Boss extends Entity{
     }
 
     public void upd(long dt){
-        if(GamePanel.getIsRewardable()) {
+        if(gamePanel.getIsRewardable()) {
             if (!getAction().equals("idle")) setAction("idle", idleAnim);
         }else{
             if (dt < cooldown) {

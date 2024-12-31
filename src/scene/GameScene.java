@@ -10,7 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -33,7 +32,7 @@ public class GameScene extends Scene {
         gamePanel.setViewOrder(20);
         Tools.addMouseSparkle(root,root, Color.BLACK);
 
-        StackPane pauseMenu = createPauseMenu(stage,root);
+        StackPane pauseMenu = createPauseMenu(stage,root,gamePanel);
         pauseMenu.setViewOrder(15);
         pauseMenu.setVisible(false);
 
@@ -47,9 +46,9 @@ public class GameScene extends Scene {
         addKeyListener();
         this.addEventHandler(KeyEvent.KEY_RELEASED,e->{
             if(e.getCode()==KeyCode.ESCAPE){
-                if(!GamePanel.getIsGameOver()) {
-                    GamePanel.setIsPause(!GamePanel.getIsPause());
-                    pauseMenu.setVisible(GamePanel.getIsPause());
+                if(!gamePanel.getIsGameOver()) {
+                    gamePanel.setIsPause(!gamePanel.getIsPause());
+                    pauseMenu.setVisible(gamePanel.getIsPause());
                 }
             }
         });
@@ -70,8 +69,8 @@ public class GameScene extends Scene {
                 long dt = t1-t0;
                 t0 = t1;
                 try{
-                    if(GamePanel.getIsGameOver()){
-                        if(GamePanel.getIsRewardable()){
+                    if(gamePanel.getIsGameOver()){
+                        if(gamePanel.getIsRewardable()){
                             rewardsPane.setVisible(false);
                         }
                         if(gameOverPane == null){
@@ -118,12 +117,12 @@ public class GameScene extends Scene {
                         }
                     }
                     else{
-                        if(GamePanel.getIsPause()){
+                        if(gamePanel.getIsPause()){
                             if(!pauseMenu.isVisible()) pauseMenu.setVisible(true);
                         }
                         else{
                             if(pauseMenu.isVisible()) pauseMenu.setVisible(false);
-                            if(GamePanel.getIsRewardable()){
+                            if(gamePanel.getIsRewardable()){
                                 if(!rewardsPane.isVisible()){
                                     rewardsPane.setVisible(true);
                                 }
@@ -143,7 +142,10 @@ public class GameScene extends Scene {
             }
         };
         stage.sceneProperty().addListener((e,prev,cur)->{
-            if(prev==this) animation.stop();
+            if(prev==this){
+                System.out.println("stop...");
+                animation.stop();
+            }
         });
         animation.start();
     }
@@ -155,7 +157,7 @@ public class GameScene extends Scene {
         this.setOnMouseDragged(e -> KeyHandler.setMousePos(e.getX(),e.getY()));
     }
 
-    private StackPane createPauseMenu(Stage stage,Pane root) {
+    private StackPane createPauseMenu(Stage stage,Pane root,GamePanel gamePanel) {
         StackPane pane = new StackPane();
         pane.setPrefSize(this.getWidth(),this.getHeight());
         pane.setAlignment(Pos.CENTER);
@@ -163,7 +165,7 @@ public class GameScene extends Scene {
 
         VBox menu = Tools.createWindowUI(true,"pause");
         Button closeBtn = (Button)menu.lookup("#closeBtn");
-        closeBtn.setOnAction(e -> GamePanel.setIsPause(false));
+        closeBtn.setOnAction(e -> gamePanel.setIsPause(false));
 
         VBox body = new VBox(20);
         body.setPadding(new Insets(0,20,20,20));
@@ -210,7 +212,7 @@ public class GameScene extends Scene {
             AudioController.play("buttonClick",1,0);
             gamePanel.energyBar.eatBento();
             gamePanel.meritBar.setVal(0);
-            GamePanel.setIsRewardable(false);
+            gamePanel.setIsRewardable(false);
         });
         Button coffee = new ImageButton("ui/coffee_btn.png", "ui/coffee_btn_hover.png","ui/coffee_btn_active.png");
         coffee.setPrefSize(200,200);
@@ -218,7 +220,7 @@ public class GameScene extends Scene {
             AudioController.play("buttonClick",1,0);
             gamePanel.sleepBar.drinkCoffee();
             gamePanel.meritBar.setVal(0);
-            GamePanel.setIsRewardable(false);
+            gamePanel.setIsRewardable(false);
         });
 
         btns.getChildren().addAll(bento,coffee);
