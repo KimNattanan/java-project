@@ -144,7 +144,6 @@ public class GameScene extends Scene {
         };
         stage.sceneProperty().addListener((e,prev,cur)->{
             if(prev==this){
-                System.out.println("stop...");
                 animation.stop();
             }
         });

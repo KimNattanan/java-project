@@ -24,7 +24,9 @@ public class AudioController {
 
     static{
         Arrays.fill(volumes, 1);
-        Arrays.fill(channels,new ArrayList<>());
+        for(int i=0; i<channels.length; ++i){
+            channels[i] = new ArrayList<>();
+        }
     }
 
     public static double getVolume(int channel){
@@ -42,7 +44,8 @@ public class AudioController {
     public static void insert(String name,String path,int channel){
         MediaPlayer media = new MediaPlayer(new Media(ClassLoader.getSystemResource(path).toString()));
         audios.put(name,new Pair<>(media,channel));
-        channels[channel].add(media);
+        ArrayList<MediaPlayer> arr = channels[channel];
+        arr.add(media);
         media.setVolume(0);
         media.play();
         media.stop();
@@ -109,7 +112,7 @@ public class AudioController {
         Slider slider = new Slider(0,100,getVolume(channel)*100);
         slider.setShowTickLabels(false);
         slider.setShowTickMarks(false);
-        slider.valueProperty().addListener((e,prev,cur)->setVolume(channel,slider.getValue()/100));
+        slider.valueProperty().addListener((e,prev,cur)->setVolume(channel,cur.doubleValue()/100));
         return slider;
     }
 

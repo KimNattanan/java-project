@@ -45,7 +45,6 @@ public class MeritBar extends Bar {
 
             if (getVal() == 1 && !gamePanel.getIsRewardable()) {
                 gamePanel.setIsRewardable(true);
-                System.out.println("www");
                 AudioController.play("rewardSfx",1,0);
             }
         }

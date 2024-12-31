@@ -1,6 +1,5 @@
 package entity;
 
-import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import utils.AnimLoader;
 import utils.AudioController;
@@ -18,7 +17,6 @@ public class Player extends Entity {
     public Player(GamePanel gamePanel){
         super(600,600,300,600);
         this.gamePanel = gamePanel;
-        AudioController.insert("plrWork","player/sound/work.mp3",1);
         setAction("idle");
         translate(gamePanel.getWidth()/2,gamePanel.getHeight()+100);
 
