@@ -47,6 +47,7 @@ public class GameScene extends Scene {
         this.addEventHandler(KeyEvent.KEY_RELEASED,e->{
             if(e.getCode()==KeyCode.ESCAPE){
                 if(!gamePanel.getIsGameOver()) {
+                    AudioController.play("buttonClick2",1,0);
                     gamePanel.setIsPause(!gamePanel.getIsPause());
                     pauseMenu.setVisible(gamePanel.getIsPause());
                 }
